@@ -291,7 +291,9 @@
             .service-row { flex-direction: column; align-items: flex-start; gap: 15px; padding: 30px 0; }
             .service-desc { text-align: left; }
             
-            .portfolio-grid { grid-template-columns: 1fr; gap: 30px; }
+            /* ESTA ES LA LÍNEA CORREGIDA PARA LAS 2 COLUMNAS: */
+            .bento-portfolio { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            
             .footer-cta { font-size: 2.5rem; }
             .footer-bottom { flex-direction: column; gap: 20px; text-align: center; margin-top: 40px; }
             .hud-line-v { left: 20px; }
