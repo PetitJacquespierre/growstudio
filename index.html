@@ -375,7 +375,15 @@
         <h2 class="section-title">PORTAFOLIO_</h2>
         
         <!-- Este contenedor es el que llenaremos con Google Sheets luego -->
+        <section class="section-container" id="portafolio">
+        <div class="meta-data">[ DIR: /WORK/PROJECTS ]</div>
+        <h2 class="section-title">PORTAFOLIO_</h2>
+        
+        <!-- Este contenedor se llenará automáticamente con JS -->
         <div class="bento-portfolio" id="bento-container">
+            <!-- Los proyectos entrarán aquí mágicamente -->
+        </div>
+    </section>
             
             <!-- Proyecto 1 -->
             <a href="https://sandiaproduction.vercel.app/" target="_blank" class="bento-item">
@@ -605,6 +613,52 @@
 
         serviceRows.forEach(row => serviceObserver.observe(row));
 
+        /* ========================================= */
+        /* CARGA DINÁMICA DEL PORTAFOLIO (SHEETS)    */
+        /* ========================================= */
+        // Reemplaza esto con el link real que te dé Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjw75hTUfJZSlZmRR4Evcm_JF8kLhV6upvouDmf0SmhZrP33z73MRkgywbNtMmpCrH/exec'; 
+        const bentoContainer = document.getElementById('bento-container');
+
+        async function cargarPortafolio() {
+            try {
+                // Pequeño texto de carga mientras espera los datos
+                bentoContainer.innerHTML = '<div style="color: var(--accent-cyan); font-size: 0.8rem;">[ FETCHING_DATA... ]</div>';
+                
+                const response = await fetch(SCRIPT_URL);
+                const proyectos = await response.json();
+                
+                if (proyectos.error) {
+                    console.error("Error del servidor:", proyectos.error);
+                    bentoContainer.innerHTML = '<div style="color: red;">[ ERROR_LOADING_DATABASE ]</div>';
+                    return;
+                }
+
+                // Limpiamos el mensaje de carga
+                bentoContainer.innerHTML = '';
+
+                // Recorremos los proyectos y los inyectamos en el HTML
+                proyectos.forEach(proyecto => {
+                    const a = document.createElement('a');
+                    a.href = proyecto.enlace;
+                    a.target = "_blank";
+                    a.className = "bento-item";
+                    
+                    a.innerHTML = `
+                        <img src="${proyecto.imagen}" alt="${proyecto.titulo}">
+                        <span class="bento-tooltip">${proyecto.titulo}</span>
+                    `;
+                    
+                    bentoContainer.appendChild(a);
+                });
+            } catch (error) {
+                console.error("Fallo la conexión:", error);
+                bentoContainer.innerHTML = '<div style="color: red;">[ SYSTEM_OFFLINE ]</div>';
+            }
+        }
+
+        // Ejecutamos la función apenas cargue el script
+        cargarPortafolio();
 
     </script>
 </body>
