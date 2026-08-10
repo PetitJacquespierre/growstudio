@@ -193,32 +193,32 @@
         .bento-item::before { top: 5px; left: 5px; border-top-color: rgba(255, 255, 255, 0.2); border-left-color: rgba(255, 255, 255, 0.2); }
         .bento-item::after { bottom: 5px; right: 5px; border-bottom-color: rgba(255, 255, 255, 0.2); border-right-color: rgba(255, 255, 255, 0.2); }
 
-        /* Comportamiento del PNG (Isotipo) */
+        /* Comportamiento del PNG (Isotipo) - A TODO COLOR DESDE EL INICIO */
         .bento-item img {
             width: 50%;
-            max-height: 50%;
+            max-height: 45%; 
             object-fit: contain;
-            /* Se ve un poco opaco y sin saturación por defecto */
-            filter: grayscale(80%) opacity(0.6); 
+            filter: grayscale(0%) opacity(1); /* Color natural siempre */
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-10px); /* Lo subimos un poco para hacerle espacio al texto */
         }
 
-        /* Tooltip con el nombre del proyecto */
+        /* Tooltip con el nombre del proyecto - SIEMPRE VISIBLE */
         .bento-tooltip {
             position: absolute;
-            bottom: -30px; /* Oculto más abajo */
+            bottom: 15px; /* Lo subimos para que esté siempre en pantalla */
             font-size: 0.7rem;
             color: var(--accent-cyan);
             font-family: var(--font-mono);
             letter-spacing: 2px;
-            opacity: 0;
+            opacity: 1; /* Siempre visible */
             transition: all 0.4s;
             text-transform: uppercase;
             text-align: center;
             width: 100%;
         }
 
-        /* HOVER: La magia interactiva */
+        /* HOVER: La magia interactiva de bordes y luz */
         .bento-item:hover {
             border-color: var(--accent-cyan);
             box-shadow: 0 0 25px rgba(0, 229, 255, 0.1) inset;
@@ -228,14 +228,14 @@
         .bento-item:hover::after { border-bottom-color: var(--accent-cyan); border-right-color: var(--accent-cyan); }
         
         .bento-item:hover img {
-            /* Recupera el 100% de color y emite luz */
-            filter: grayscale(0%) opacity(1) drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
-            transform: scale(1.1) translateY(-10px); /* Sube un poco para dar espacio al texto */
+            /* Agrega el resplandor neón sin perder el color */
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.8));
+            transform: scale(1.1) translateY(-15px); /* Salta un poquito más hacia arriba */
         }
         
         .bento-item:hover .bento-tooltip {
-            bottom: 15px; /* Sube y aparece */
-            opacity: 1;
+            color: #FFFFFF; /* El texto se pone blanco brillante al hacer hover */
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
         }
 
         /* ========================================= */
