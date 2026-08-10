@@ -275,6 +275,158 @@
         /* ========================================= */
         /* RESPONSIVE (SMARTPHONES Y TABLETS)        */
         /* ========================================= */
+
+/* ========================================= */
+        /* MODAL DE CONTACTO (FORMULARIO)            */
+        /* ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .contact-modal {
+            background: var(--bg-color);
+            border: 1px solid var(--accent-cyan);
+            padding: 50px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            transform: translateY(50px);
+            transition: all 0.4s ease;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
+        }
+
+        .modal-overlay.active .contact-modal {
+            transform: translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--accent-orange);
+            font-size: 2rem;
+            background: none;
+            border: none;
+            transition: transform 0.3s;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg) scale(1.2);
+            color: var(--accent-cyan);
+        }
+
+        .modal-title {
+            font-family: var(--font-head);
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: none;
+            border-bottom: 1px solid #333;
+            padding: 15px 10px;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .form-label {
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            color: #888;
+            font-size: 0.8rem;
+            pointer-events: none;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Magia CSS: Sube la etiqueta cuando escribes o haces click */
+        .form-input:focus ~ .form-label,
+        .form-input:valid ~ .form-label {
+            top: -20px;
+            left: 0;
+            font-size: 0.6rem;
+            color: var(--accent-cyan);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
+
+        /* Botón flotante inferior (Reemplazo del viejo WhatsApp) */
+        .contact-trigger-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            border: 1px solid var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 15px 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .contact-trigger-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
         @media (max-width: 768px) {
             nav { padding: 20px; flex-direction: column; gap: 15px; }
             .menu { font-size: 0.7rem; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -297,7 +449,7 @@
             .footer-cta { font-size: 2.5rem; }
             .footer-bottom { flex-direction: column; gap: 20px; text-align: center; margin-top: 40px; }
             .hud-line-v { left: 20px; }
-            .whatsapp-btn { bottom: 20px; right: 20px; font-size: 0.7rem; padding: 10px 15px; }
+            .contact-trigger-btn { bottom: 20px; right: 20px; font-size: 0.7rem; padding: 10px 15px; }
         }
     </style>
 </head>
@@ -392,7 +544,41 @@
         </div>
     </section>
 
-    <a href="https://wa.me/584120000000" target="_blank" class="whatsapp-btn">[ INIT_CHAT_WSP ]</a>
+    <!-- ========================================= -->
+    <!-- MODAL DE CONTACTO FLOTANTE                -->
+    <!-- ========================================= -->
+    
+    <!-- Botón que activa el modal -->
+    <button class="contact-trigger-btn" id="open-modal-btn">
+        [ INICIAR_PROYECTO ]
+    </button>
+
+    <!-- La ventana oscura que cubre la pantalla -->
+    <div class="modal-overlay" id="contact-modal-overlay">
+        <div class="contact-modal">
+            <button class="close-modal" id="close-modal-btn">×</button>
+            <h3 class="modal-title">INICIALIZAR SECUENCIA</h3>
+            
+            <form id="contact-form">
+                <div class="form-group">
+                    <input type="text" class="form-input" required id="form-name">
+                    <label class="form-label">[ ID / NOMBRE ]</label>
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" class="form-input" required id="form-email">
+                    <label class="form-label">[ CORREO ELECTRÓNICO ]</label>
+                </div>
+                
+                <div class="form-group">
+                    <textarea class="form-input" required rows="3" style="resize: none;" id="form-message"></textarea>
+                    <label class="form-label">[ PARÁMETROS DEL PROYECTO ]</label>
+                </div>
+                
+                <button type="submit" class="submit-btn">[ EJECUTAR ]</button>
+            </form>
+        </div>
+    </div>
 
     <footer>
         <div class="meta-data">[ EXECUTE: CONTACT.EXE ]</div>
@@ -628,6 +814,52 @@
         // Ejecutamos la función apenas cargue el script
         cargarPortafolio();
 
+/* ========================================= */
+        /* LÓGICA DEL MODAL DE CONTACTO              */
+        /* ========================================= */
+        const modalOverlay = document.getElementById('contact-modal-overlay');
+        const openBtn = document.getElementById('open-modal-btn');
+        const closeBtn = document.getElementById('close-modal-btn');
+
+        // Abrir Modal
+        openBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+        });
+
+        // Cerrar Modal con la X
+        closeBtn.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        // Cerrar Modal haciendo clic en lo oscuro afuera
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        // Simulación de envío (luego conectamos a Vercel)
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('.submit-btn');
+            
+            // Animación de estado
+            submitBtn.innerText = '[ PROCESANDO... ]';
+            
+            setTimeout(() => {
+                submitBtn.innerText = '[ TRANSACCIÓN EXITOSA ]';
+                submitBtn.style.background = 'var(--accent-cyan)';
+                submitBtn.style.color = '#000';
+                
+                setTimeout(() => {
+                    modalOverlay.classList.remove('active');
+                    e.target.reset(); // Limpia el formulario
+                    submitBtn.innerText = '[ EJECUTAR ]';
+                    submitBtn.style.background = 'transparent';
+                    submitBtn.style.color = 'var(--accent-cyan)';
+                }, 2000);
+            }, 1500);
+        });
     </script>
 </body>
 </html>
