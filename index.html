@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Studio | Creative Digital Agency</title>
+    
+    <link rel="icon" href="img/growisotipo.png" type="image/png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #080808;
+            --text-main: #E0E0E0;
+            --accent-cyan: #00E5FF;
+            --accent-orange: #FF5500;
+            --font-head: 'Syncopate', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            --grid-color: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main); font-family: var(--font-mono);
+            overflow-x: hidden; overflow-y: hidden;
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* ========================================= */
+        /* SPLASH SCREEN: REDISEÑO HUD & ESCÁNER     */
+        /* ========================================= */
+        #splash-screen {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+        }
+
+        #splash-webgl { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.7; }
+
+        .splash-center-container { 
+            position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; 
+            opacity: 0;
+            animation: fadeInSync 0.8s ease-in-out 0.2s forwards; 
+        }
+
+        .splash-ring {
+            position: absolute; width: 260px; height: 260px;
+            border: 1px solid rgba(0, 229, 255, 0.15); 
+            border-radius: 50%;
+            animation: spin 8s linear infinite;
+        }
+        .splash-ring::before {
+            content: ''; position: absolute; inset: 20px; 
+            border: 2px dashed rgba(255, 85, 0, 0.4);
+            border-radius: 50%; animation: spin-reverse 12s linear infinite; 
+        }
+        .splash-ring::after {
+            content: ''; position: absolute; inset: -15px; 
+            border: 2px solid transparent;
+            border-top-color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 4s ease-in-out infinite alternate;
+        }
+
+        .splash-scanner {
+            position: absolute;
+            width: 180px;
+            height: 2px;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-cyan);
+            z-index: 4;
+            animation: scan 2.5s ease-in-out infinite alternate;
+        }
+
+        .splash-logo {
+            position: relative; width: 140px; z-index: 3;
+            animation: pulse-logo 2s infinite alternate;
+        }
+
+        .loading-text {
+            position: absolute; bottom: -100px; font-family: var(--font-mono); font-size: 0.8rem;
+            color: var(--accent-cyan); letter-spacing: 5px; animation: blink 1s infinite step-start;
+        }
+
+        @keyframes fadeInSync { to { opacity: 1; } }
+        @keyframes scan { 0% { transform: translateY(-70px); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(70px); opacity: 0; } }
+        @keyframes pulse-logo { 0% { filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5)); transform: scale(1); } 100% { filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.9)) drop-shadow(0 0 40px rgba(255,85,0,0.3)); transform: scale(1.05); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* ========================================= */
+        /* RESTO DE LA PÁGINA                        */
+        /* ========================================= */
+        #tsparticles { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; pointer-events: none; }
+        .hud-line-v, .hud-line-h { position: fixed; background: rgba(0, 229, 255, 0.2); z-index: 999; pointer-events: none; }
+        .hud-line-v { width: 1px; height: 100vh; left: 50px; top: 0; }
+        .hud-line-h { width: 100vw; height: 1px; top: 50px; left: 0; }
+        
+        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 80px; z-index: 100; background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--grid-color); }
+        .logo img { height: 60px; } /* <-- Logo ampliado aquí */
+        .menu { display: flex; gap: 30px; font-size: 0.8rem; text-transform: uppercase; }
+        .menu a { color: var(--text-main); text-decoration: none; transition: color 0.3s; position: relative; }
+        .menu a:hover { color: var(--accent-cyan); }
+        .menu a::before { content: '/>'; position: absolute; left: -20px; opacity: 0; color: var(--accent-orange); transition: opacity 0.3s, left 0.3s; }
+        .menu a:hover::before { opacity: 1; left: -15px; }
+
+        .hero { height: 100vh; display: flex; justify-content: space-between; align-items: center; padding: 0 100px; position: relative; z-index: 10; }
+        .hero-content { flex: 1; max-width: 600px; }
+        .hero-visual { flex: 1; display: flex; justify-content: center; align-items: center; perspective: 1000px; z-index: 20; height: 100%; }
+        
+        #isotipo-holograma { width: 100%; max-width: 500px; opacity: 0.85; filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.6)) drop-shadow(0 0 50px rgba(255, 85, 0, 0.3)); transform-style: preserve-3d; will-change: transform; }
+        
+        .meta-data { font-size: 0.7rem; color: var(--accent-cyan); margin-bottom: 20px; letter-spacing: 2px; }
+        
+        /* 1. El título principal del Hero */
+        h1 { 
+            font-family: var(--font-head); 
+            font-size: clamp(2.2rem, 5vw, 3.8rem); /* Reducido de 5rem */
+            line-height: 1.1; 
+            text-transform: uppercase; 
+            font-weight: 700; 
+        }
+        
+        .hero-desc { margin-top: 20px; max-width: 400px; font-size: 0.9rem; color: #888; border-left: 2px solid var(--accent-orange); padding-left: 15px; }
+
+        .section-container { padding: 100px; border-top: 1px solid var(--grid-color); position: relative; z-index: 10; background: rgba(8, 8, 8, 0.9); }
+        .section-title { font-family: var(--font-head); font-size: 2rem; margin-bottom: 50px; color: var(--accent-cyan); }
+        
+        /* ========================================= */
+        /* SECCIÓN SERVICIOS                         */
+        /* ========================================= */
+        .services-list { display: flex; flex-direction: column; border-top: 1px solid var(--grid-color); margin-top: 40px; }
+        .service-row { display: flex; justify-content: space-between; align-items: center; padding: 50px 0; border-bottom: 1px solid var(--grid-color); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; }
+        .service-row::before { content: ''; position: absolute; top: 0; left: 0; width: 0%; height: 100%; background: rgba(0, 229, 255, 0.05); transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 0; }
+        .service-row:hover::before { width: 100%; }
+        .service-row:hover { padding-left: 30px; padding-right: 30px; border-bottom-color: var(--accent-cyan); }
+        /* 2. Los títulos de la sección Servicios */
+        .service-title { 
+            font-family: var(--font-head); 
+            font-size: clamp(1.8rem, 4vw, 2.8rem); /* Reducido de 4rem */
+            color: var(--text-main); 
+            position: relative; 
+            z-index: 1; 
+            transition: color 0.3s; 
+            text-transform: uppercase; 
+        }
+        .service-row:hover .service-title { color: var(--accent-cyan); text-shadow: 0 0 20px rgba(0, 229, 255, 0.4); }
+        .service-desc { font-size: 0.9rem; color: #888; max-width: 300px; text-align: right; position: relative; z-index: 1; line-height: 1.5; }
+
+        /* ========================================= */
+        /* SECCIÓN PORTAFOLIO                        */
+        /* ========================================= */
+        .portfolio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+        .project-card { border: 1px solid #333; padding: 30px; position: relative; transition: all 0.3s ease; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .project-card::after { content: '+'; position: absolute; top: 10px; right: 10px; color: var(--accent-orange); }
+        .project-card:hover { border-color: var(--accent-cyan); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.1); }
+        .project-title { font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 10px; }
+        .project-link { color: var(--accent-cyan); text-decoration: none; font-size: 0.8rem; }
+
+        /* ========================================= */
+        /* SECCIÓN NOSOTROS (MANIFIESTO)             */
+        /* ========================================= */
+        .manifesto-container { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 50px 0; }
+
+        /* 3. El texto del Manifiesto (Nosotros) */
+        .manifesto-text { 
+            font-family: var(--font-head); 
+            font-size: clamp(1.2rem, 3.5vw, 2.2rem); /* Reducido de 4.5rem */
+            line-height: 1.4; 
+            text-transform: uppercase; 
+            text-align: center; 
+            max-width: 90%; 
+            margin: 0 auto; /* Asegura que esté centrado */
+        }
+
+        .manifesto-text span { color: rgba(255, 255, 255, 0.1); transition: color 0.1s ease, text-shadow 0.1s ease; }
+        .manifesto-text span.iluminado { color: #FFFFFF; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
+        .manifesto-text span:hover { color: var(--accent-cyan) !important; text-shadow: 0 0 20px var(--accent-cyan) !important; transition: 0s; }
+
+        .whatsapp-btn { position: fixed; bottom: 40px; right: 40px; border: 1px solid var(--accent-orange); background: rgba(255, 85, 0, 0.1); color: var(--accent-orange); padding: 15px 20px; text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; z-index: 1000; backdrop-filter: blur(5px); transition: all 0.3s; }
+        .whatsapp-btn:hover { background: var(--accent-orange); color: #000; }
+
+        footer { padding: 100px; border-top: 1px solid var(--grid-color); text-align: center; background: var(--bg-color); position: relative; z-index: 10; }
+        /* 4. El llamado a la acción del Footer */
+        .footer-cta { 
+            font-family: var(--font-head); 
+            font-size: clamp(2rem, 5vw, 3.2rem); /* Reducido de 4rem */
+            margin-bottom: 40px; 
+        }
+        .footer-cta span { color: var(--accent-orange); }
+        .footer-bottom { display: flex; justify-content: space-between; font-size: 0.7rem; color: #555; margin-top: 80px; }
+
+        /* ========================================= */
+        /* RESPONSIVE (SMARTPHONES Y TABLETS)        */
+        /* ========================================= */
+        @media (max-width: 768px) {
+            nav { padding: 20px; flex-direction: column; gap: 15px; }
+            .menu { font-size: 0.7rem; gap: 10px; flex-wrap: wrap; justify-content: center; }
+            .hero { flex-direction: column; text-align: center; padding: 120px 20px 20px; justify-content: center; }
+            .hero-content { margin-bottom: 30px; }
+            .hero-desc { border-left: none; border-bottom: 2px solid var(--accent-orange); padding-left: 0; padding-bottom: 10px; margin: 20px auto 0; text-align: center; }
+            .hero-visual { height: 40vh; margin-top: 20px; }
+            #isotipo-holograma { max-width: 200px; }
+            .section-container { padding: 60px 20px; }
+            
+            /* Ajustes para servicios en móvil */
+            .service-title { font-size: 2.5rem; }
+            .service-row { flex-direction: column; align-items: flex-start; gap: 15px; padding: 30px 0; }
+            .service-desc { text-align: left; }
+            
+            .portfolio-grid { grid-template-columns: 1fr; gap: 30px; }
+            .footer-cta { font-size: 2.5rem; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; margin-top: 40px; }
+            .hud-line-v { left: 20px; }
+            .whatsapp-btn { bottom: 20px; right: 20px; font-size: 0.7rem; padding: 10px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE CARGA (SPLASH SCREEN) -->
+    <div id="splash-screen">
+        <canvas id="splash-webgl"></canvas>
+        <div class="splash-center-container">
+            <div class="splash-ring"></div>
+            <div class="splash-scanner"></div>
+            <img src="img/growisotipo.png" class="splash-logo" alt="Grow Studio Isotipo">
+            <div class="loading-text">SYSTEM_BOOTING // GROW_STUDIO</div>
+        </div>
+    </div>
+
+    <!-- FONDO DE PARTÍCULAS -->
+    <div id="tsparticles"></div>
+    <div class="hud-line-v"></div>
+    <div class="hud-line-h"></div>
+
+    <!-- NAVEGACIÓN -->
+    <nav>
+        <div class="logo">
+            <img src="img/growlogo.png" alt="Grow Studio">
+        </div>
+        <div class="menu">
+            <a href="#inicio">01.Inicio</a>
+            <a href="#servicios">02.Servicios</a>
+            <a href="#portafolio">03.Portafolio</a>
+            <a href="#nosotros">04.Nosotros</a>
+        </div>
+    </nav>
+
+    <!-- INICIO (HERO) -->
+    <header class="hero" id="inicio">
+        <div class="hero-content">
+            <div class="meta-data">[SYS_INIT: GROW_STUDIO_V1.0] // COORD: 11.7061° N, 70.1802° W</div>
+            <h1>Construimos<br><span style="color: var(--accent-cyan);">Experiencias</span><br>Digitales</h1>
+            <p class="hero-desc">Data. Diseño. Desarrollo. Escalamos tu marca mediante interfaces inmersivas y rendimiento absoluto.</p>
+        </div>
+        <div class="hero-visual">
+            <img src="img/growisotipo.png" id="isotipo-holograma" alt="Grow Studio Isotipo">
+        </div>
+    </header>
+
+    <!-- SERVICIOS -->
+    <section class="section-container" id="servicios">
+        <div class="meta-data">[ DIR: /SERVICES/CORE_MODULES ]</div>
+        <h2 class="section-title">SERVICIOS_</h2>
+        
+        <div class="services-list">
+            <div class="service-row">
+                <div class="service-title">Web Apps</div>
+                <div class="service-desc">Plataformas robustas a medida con bases de datos integradas y rendimiento absoluto.</div>
+            </div>
+            
+            <div class="service-row">
+                <div class="service-title">Landing Pages</div>
+                <div class="service-desc">Sitios de alta conversión optimizados para campañas publicitarias y velocidad extrema.</div>
+            </div>
+            
+            <div class="service-row">
+                <div class="service-title">Menús QR</div>
+                <div class="service-desc">Ecosistemas digitales dinámicos para el sector gastronómico con gestión en tiempo real.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PORTAFOLIO -->
+    <section class="section-container" id="portafolio">
+        <div class="meta-data">[ DIR: /WORK/PROJECTS ]</div>
+        <h2 class="section-title">PORTAFOLIO_</h2>
+        <div class="portfolio-grid">
+            <div class="project-card">
+                <div class="meta-data">SYS_STATUS: LIVE // TYPE: WEB_APP</div>
+                <h3 class="project-title">Sandia Production</h3>
+                <p class="hero-desc" style="border:none; padding:0; margin-top:0;">Plataforma digital inmersiva para productora audiovisual.</p><br>
+                <a href="https://sandiaproduction.vercel.app" target="_blank" class="project-link">[ ABRIR_PROYECTO ]</a>
+            </div>
+            <div class="project-card">
+                <div class="meta-data">SYS_STATUS: LIVE // TYPE: E-COMMERCE / LANDING</div>
+                <h3 class="project-title">Reto Virtual Vzla</h3>
+                <p class="hero-desc" style="border:none; padding:0; margin-top:0;">Ecosistema web para eventos y desafíos virtuales.</p><br>
+                <a href="https://www.retovirtualvzla.com" target="_blank" class="project-link">[ ABRIR_PROYECTO ]</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOSOTROS -->
+    <section class="section-container" id="nosotros">
+        <div class="meta-data">[ DIR: /AGENCY/CORE_IDENTITY ]</div>
+        <h2 class="section-title">NOSOTROS_</h2>
+        
+        <div class="manifesto-container">
+            <p class="manifesto-text" id="manifesto-text">
+                No somos una agencia tradicional. Escalamos negocios a través de código puro, data y diseño inmersivo. Construimos el futuro digital de tu marca.
+            </p>
+        </div>
+    </section>
+
+    <a href="https://wa.me/584120000000" target="_blank" class="whatsapp-btn">[ INIT_CHAT_WSP ]</a>
+
+    <footer>
+        <div class="meta-data">[ EXECUTE: CONTACT.EXE ]</div>
+        <div class="footer-cta">HABLEMOS DE<br><span>TU PROYECTO</span></div>
+        <div class="footer-bottom">
+            <div>© 2026 GROW STUDIO // PUNTO FIJO, VENEZUELA</div>
+            <div>[ CODE & CREATIVITY ]</div>
+        </div>
+    </footer>
+
+    <!-- LIBRERÍAS EXTERNAS -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    
+    <script>
+        /* ========================================= */
+        /* LÓGICA DEL SPLASH SCREEN Y ORBE WEBGL     */
+        /* ========================================= */
+        let splashActive = true;
+        const splashScreen = document.getElementById('splash-screen');
+        
+        setTimeout(() => {
+            splashScreen.style.opacity = '0';
+            splashScreen.style.visibility = 'hidden';
+            document.body.style.overflowY = 'auto'; 
+            splashActive = false;
+        }, 4000);
+
+        const splashCanvas = document.getElementById('splash-webgl');
+        const splashScene = new THREE.Scene();
+        const splashCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        splashCamera.position.z = 5;
+        const splashRenderer = new THREE.WebGLRenderer({ canvas: splashCanvas, alpha: true, antialias: true });
+        splashRenderer.setSize(window.innerWidth, window.innerHeight);
+
+        const orbGeometry = new THREE.IcosahedronGeometry(2.5, 60);
+        const orbMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uColor1: { value: new THREE.Color('#00E5FF') },
+                uColor2: { value: new THREE.Color('#FF5500') }
+            },
+            vertexShader: `
+                uniform float uTime; varying vec2 vUv; varying float vDistortion;
+                float snoise(vec3 v) { return sin(v.x * 2.0 + uTime) * cos(v.y * 2.0 + uTime) * sin(v.z * 2.0 + uTime); }
+                void main() {
+                    vUv = uv;
+                    float distortion = snoise(position + uTime * 0.5) * 0.4;
+                    vDistortion = distortion;
+                    vec3 newPosition = position + normal * distortion;
+                    vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
+                    gl_Position = projectionMatrix * mvPosition;
+                    gl_PointSize = 2.0 * (1.0 / -mvPosition.z);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 uColor1; uniform vec3 uColor2; varying float vDistortion;
+                void main() {
+                    float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+                    if (distanceToCenter > 0.5) discard;
+                    float mixValue = (vDistortion + 0.3) * 1.5;
+                    vec3 finalColor = mix(uColor1, uColor2, mixValue);
+                    gl_FragColor = vec4(finalColor, (1.0 - distanceToCenter * 2.0) * 0.4);
+                }
+            `,
+            transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+        });
+
+        const orbMesh = new THREE.Points(orbGeometry, orbMaterial);
+        splashScene.add(orbMesh);
+
+        const orbClock = new THREE.Clock();
+        function animateSplashOrb() {
+            if (!splashActive) return; 
+            requestAnimationFrame(animateSplashOrb);
+            const elapsedTime = orbClock.getElapsedTime();
+            orbMaterial.uniforms.uTime.value = elapsedTime;
+            orbMesh.rotation.y = elapsedTime * 0.1;
+            orbMesh.rotation.z = elapsedTime * 0.05;
+            splashRenderer.render(splashScene, splashCamera);
+        }
+        animateSplashOrb();
+
+        /* ========================================= */
+        /* LÓGICA DE LA PÁGINA PRINCIPAL             */
+        /* ========================================= */
+        let targetX = 0, targetY = 0, currentScroll = 0;
+        const isotipo = document.getElementById('isotipo-holograma');
+
+        window.addEventListener('scroll', () => {
+            currentScroll = window.scrollY;
+            const nav = document.querySelector('nav');
+            if (currentScroll > 50) { nav.style.background = 'rgba(8, 8, 8, 0.95)'; nav.style.boxShadow = '0 5px 20px rgba(0, 229, 255, 0.05)'; } 
+            else { nav.style.background = 'rgba(8, 8, 8, 0.8)'; nav.style.boxShadow = 'none'; }
+            updateTransform();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            targetX = (window.innerWidth / 2 - e.pageX) / 25; 
+            targetY = (window.innerHeight / 2 - e.pageY) / 25;
+            updateTransform();
+        });
+
+        function updateTransform() {
+            const scrollRotY = currentScroll * 0.3; 
+            const scrollRotZ = currentScroll * 0.05; 
+            const parallaxY = currentScroll * 0.8; 
+            isotipo.style.transform = `translateY(${parallaxY}px) rotateY(${targetX + scrollRotY}deg) rotateX(${targetY}deg) rotateZ(${scrollRotZ}deg)`;
+        }
+
+        let time = 0;
+        function floatIdle() {
+            time += 0.02;
+            const floatY = Math.sin(time) * 15; 
+            const scrollRotY = currentScroll * 0.3; 
+            const scrollRotZ = currentScroll * 0.05;
+            const parallaxY = currentScroll * 0.8;
+            isotipo.style.transform = `translateY(${parallaxY + floatY}px) rotateY(${targetX + scrollRotY}deg) rotateX(${targetY}deg) rotateZ(${scrollRotZ}deg)`;
+            requestAnimationFrame(floatIdle);
+        }
+        floatIdle();
+
+        /* ========================================= */
+        /* EFECTO DE REVELADO DE TEXTO EN NOSOTROS   */
+        /* ========================================= */
+        const manifesto = document.getElementById('manifesto-text');
+        const words = manifesto.innerText.split(' ');
+        manifesto.innerHTML = '';
+        
+        words.forEach(word => {
+            const span = document.createElement('span');
+            span.innerText = word + ' ';
+            manifesto.appendChild(span);
+        });
+
+        window.addEventListener('scroll', () => {
+            const rect = manifesto.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            let scrollPercent = (windowHeight - rect.top) / (windowHeight / 1.5);
+            
+            if(scrollPercent < 0) scrollPercent = 0;
+            if(scrollPercent > 1) scrollPercent = 1;
+
+            const spans = manifesto.querySelectorAll('span');
+            const wordsToIlluminate = Math.floor(scrollPercent * spans.length);
+
+            spans.forEach((span, index) => {
+                if (index < wordsToIlluminate) {
+                    span.classList.add('iluminado');
+                } else {
+                    span.classList.remove('iluminado');
+                }
+            });
+        });
+
+        /* ========================================= */
+        /* INICIALIZACIÓN DE PARTÍCULAS              */
+        /* ========================================= */
+        tsParticles.load("tsparticles", {
+            fpsLimit: 60,
+            particles: {
+                number: { value: 60, density: { enable: true, value_area: 800 } },
+                color: { value: "#00E5FF" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 2 },
+                line_linked: { enable: true, distance: 150, color: "#00E5FF", opacity: 0.15, width: 1 },
+                move: { enable: true, speed: 0.8, direction: "none", random: true, straight: false, out_mode: "out", bounce: false, }
+            },
+            interactivity: { detect_on: "window", events: { onhover: { enable: true, mode: "grab" }, resize: true }, modes: { grab: { distance: 200, line_linked: { opacity: 0.4 } } } },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
