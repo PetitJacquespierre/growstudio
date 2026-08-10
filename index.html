@@ -405,7 +405,7 @@
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
         }
 
-        /* Botón flotante inferior (Reemplazo del viejo WhatsApp) */
+        /* Botón flotante inferior (Oculto al inicio) */
         .contact-trigger-btn {
             position: fixed;
             bottom: 40px;
@@ -419,13 +419,34 @@
             letter-spacing: 1px;
             z-index: 1000;
             backdrop-filter: blur(5px);
-            transition: all 0.3s;
+            
+            /* Está oculto y un poco más abajo por defecto */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(30px);
+            transition: all 0.4s ease;
+        }
+
+        /* Clase que lo hace aparecer y titilar */
+        .contact-trigger-btn.mostrar {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            animation: pulsoCyan 2s infinite;
+        }
+
+        /* El efecto de la luz emitiendo ondas */
+        @keyframes pulsoCyan {
+            0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
+            70% { box-shadow: 0 0 15px 15px rgba(0, 229, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
         }
 
         .contact-trigger-btn:hover {
             background: var(--accent-cyan);
             color: #000;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+            animation: none; /* Se detiene el pulso si le pasas el ratón */
         }
         @media (max-width: 768px) {
             nav { padding: 20px; flex-direction: column; gap: 15px; }
@@ -550,7 +571,7 @@
     
     <!-- Botón que activa el modal -->
     <button class="contact-trigger-btn" id="open-modal-btn">
-        [ INICIAR_PROYECTO ]
+        [ COTIZA TU IDEA ]
     </button>
 
     <!-- La ventana oscura que cubre la pantalla -->
@@ -562,7 +583,7 @@
             <form id="contact-form">
                 <div class="form-group">
                     <input type="text" class="form-input" required id="form-name">
-                    <label class="form-label">[ ID / NOMBRE ]</label>
+                    <label class="form-label">[ NOMBRE O EMPRESA ]</label>
                 </div>
                 
                 <div class="form-group">
@@ -571,11 +592,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <textarea class="form-input" required rows="3" style="resize: none;" id="form-message"></textarea>
+                    <!-- Aumenté a rows="5" para que el espacio sea más grande -->
+                    <textarea class="form-input" required rows="5" style="resize: none;" id="form-message"></textarea>
                     <label class="form-label">[ PARÁMETROS DEL PROYECTO ]</label>
                 </div>
                 
-                <button type="submit" class="submit-btn">[ EJECUTAR ]</button>
+                <button type="submit" class="submit-btn">[ ENVIAR SOLICITUD ]</button>
             </form>
         </div>
     </div>
@@ -860,6 +882,26 @@
                 }, 2000);
             }, 1500);
         });
+
+
+        /* ========================================= */
+        /* APARECER BOTÓN A LA MITAD DEL SCROLL      */
+        /* ========================================= */
+        window.addEventListener('scroll', () => {
+            const openBtn = document.getElementById('open-modal-btn');
+            
+            // Calculamos cuánto mide la página y por dónde vas
+            const alturaTotal = document.body.scrollHeight - window.innerHeight;
+            const posicionScroll = window.scrollY;
+
+            // Si llegaste a más del 50% de la página, aparece mágicamente
+            if (posicionScroll > (alturaTotal / 2)) {
+                openBtn.classList.add('mostrar');
+            } else {
+                openBtn.classList.remove('mostrar');
+            }
+        });
+
     </script>
 </body>
 </html>
