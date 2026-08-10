@@ -162,14 +162,81 @@
         .service-desc { font-size: 0.9rem; color: #888; max-width: 300px; text-align: right; position: relative; z-index: 1; line-height: 1.5; }
 
         /* ========================================= */
-        /* SECCIÓN PORTAFOLIO                        */
+        /* SECCIÓN PORTAFOLIO (BENTO GRID HUD)       */
         /* ========================================= */
-        .portfolio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
-        .project-card { border: 1px solid #333; padding: 30px; position: relative; transition: all 0.3s ease; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .project-card::after { content: '+'; position: absolute; top: 10px; right: 10px; color: var(--accent-orange); }
-        .project-card:hover { border-color: var(--accent-cyan); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.1); }
-        .project-title { font-family: var(--font-head); font-size: 1.5rem; margin-bottom: 10px; }
-        .project-link { color: var(--accent-cyan); text-decoration: none; font-size: 0.8rem; }
+        .bento-portfolio {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas en PC */
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .bento-item {
+            aspect-ratio: 1 / 1; /* Mantiene las cajas perfectamente cuadradas */
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            overflow: hidden;
+        }
+
+        /* Esquinas técnicas para cada caja (estilo escáner) */
+        .bento-item::before, .bento-item::after {
+            content: ''; position: absolute; width: 10px; height: 10px;
+            border: 1px solid transparent; transition: all 0.3s;
+        }
+        .bento-item::before { top: 5px; left: 5px; border-top-color: rgba(255, 255, 255, 0.2); border-left-color: rgba(255, 255, 255, 0.2); }
+        .bento-item::after { bottom: 5px; right: 5px; border-bottom-color: rgba(255, 255, 255, 0.2); border-right-color: rgba(255, 255, 255, 0.2); }
+
+        /* Comportamiento del PNG (Isotipo) */
+        .bento-item img {
+            width: 50%;
+            max-height: 50%;
+            object-fit: contain;
+            /* Se ve un poco opaco y sin saturación por defecto */
+            filter: grayscale(80%) opacity(0.6); 
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Tooltip con el nombre del proyecto */
+        .bento-tooltip {
+            position: absolute;
+            bottom: -30px; /* Oculto más abajo */
+            font-size: 0.7rem;
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: all 0.4s;
+            text-transform: uppercase;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* HOVER: La magia interactiva */
+        .bento-item:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.1) inset;
+            transform: translateY(-5px);
+        }
+        .bento-item:hover::before { border-top-color: var(--accent-cyan); border-left-color: var(--accent-cyan); }
+        .bento-item:hover::after { border-bottom-color: var(--accent-cyan); border-right-color: var(--accent-cyan); }
+        
+        .bento-item:hover img {
+            /* Recupera el 100% de color y emite luz */
+            filter: grayscale(0%) opacity(1) drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
+            transform: scale(1.1) translateY(-10px); /* Sube un poco para dar espacio al texto */
+        }
+        
+        .bento-item:hover .bento-tooltip {
+            bottom: 15px; /* Sube y aparece */
+            opacity: 1;
+        }
 
         /* ========================================= */
         /* SECCIÓN NOSOTROS (MANIFIESTO)             */
@@ -298,23 +365,40 @@
         </div>
     </section>
 
-    <!-- PORTAFOLIO -->
+    <!-- ========================================= -->
+    <!-- PORTAFOLIO (BENTO GRID)                   -->
+    <!-- ========================================= -->
     <section class="section-container" id="portafolio">
         <div class="meta-data">[ DIR: /WORK/PROJECTS ]</div>
         <h2 class="section-title">PORTAFOLIO_</h2>
-        <div class="portfolio-grid">
-            <div class="project-card">
-                <div class="meta-data">SYS_STATUS: LIVE // TYPE: WEB_APP</div>
-                <h3 class="project-title">Sandia Production</h3>
-                <p class="hero-desc" style="border:none; padding:0; margin-top:0;">Plataforma digital inmersiva para productora audiovisual.</p><br>
-                <a href="https://sandiaproduction.vercel.app" target="_blank" class="project-link">[ ABRIR_PROYECTO ]</a>
-            </div>
-            <div class="project-card">
-                <div class="meta-data">SYS_STATUS: LIVE // TYPE: E-COMMERCE / LANDING</div>
-                <h3 class="project-title">Reto Virtual Vzla</h3>
-                <p class="hero-desc" style="border:none; padding:0; margin-top:0;">Ecosistema web para eventos y desafíos virtuales.</p><br>
-                <a href="https://www.retovirtualvzla.com" target="_blank" class="project-link">[ ABRIR_PROYECTO ]</a>
-            </div>
+        
+        <!-- Este contenedor es el que llenaremos con Google Sheets luego -->
+        <div class="bento-portfolio" id="bento-container">
+            
+            <!-- Proyecto 1 -->
+            <a href="https://sandiaproduction.vercel.app/" target="_blank" class="bento-item">
+                <img src="img/sandiaproduction.png" alt="Sandia Production">
+                <span class="bento-tooltip">Sandia Production</span>
+            </a>
+
+            <!-- Proyecto 2 -->
+            <a href="http://www.retovirtualvzla.com" target="_blank" class="bento-item">
+                <img src="img/retovirtualvzla.png" alt="Reto Virtual Vzla">
+                <span class="bento-tooltip">Reto Virtual Vzla</span>
+            </a>
+
+            <!-- Proyecto 3 -->
+            <a href="http://milechuga.netlify.app" target="_blank" class="bento-item">
+                <img src="img/milechugaisotipo_Sinfondo.png" alt="Mi Lechuga">
+                <span class="bento-tooltip">Mi Lechuga</span>
+            </a>
+
+            <!-- Proyecto 4 -->
+            <a href="https://zephyrapromo33.netlify.app/" target="_blank" class="bento-item">
+                <img src="img/ZEPHYRA.png" alt="Zephyra Promo XXXIII">
+                <span class="bento-tooltip">Zephyra Promo</span>
+            </a>
+
         </div>
     </section>
 
