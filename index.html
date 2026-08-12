@@ -179,83 +179,66 @@
         .service-desc { font-size: 0.9rem; color: #888; max-width: 300px; text-align: right; position: relative; z-index: 1; line-height: 1.5; }
 
         /* ========================================= */
-        /* SECCIÓN PORTAFOLIO (MARQUEE INFINITO)     */
+        /* SECCIÓN PORTAFOLIO (MARQUEE INFINITO ALIADOS) */
         /* ========================================= */
         .portfolio-wrapper {
             width: 100%;
             overflow: hidden;
             margin-top: 40px;
             position: relative;
-            /* Difuminado a los lados para un efecto más limpio */
+            /* Difuminado oscuro a los bordes */
             mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
             -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
 
         .bento-portfolio {
             display: flex;
-            gap: 20px;
+            gap: 80px; /* Separación amplia para destacar logos */
+            align-items: center;
             width: max-content;
             animation: scrollMarquee 25s linear infinite;
         }
 
         .bento-portfolio:hover {
-            animation-play-state: paused; /* Se detiene al poner el mouse encima */
+            animation-play-state: paused; 
         }
 
         @keyframes scrollMarquee {
-            to {
-                /* Nos desplazamos exactamente el 50% (que es la mitad duplicada) más la mitad de un gap (10px) */
-                transform: translateX(calc(-50% - 10px));
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-50% - 40px)); }
         }
 
         .bento-item {
-            width: 320px; /* Ancho fijo grande para que se vea toda la imagen */
-            height: 220px;
-            flex-shrink: 0;
-            border: 1px solid rgba(0, 229, 255, 0.15);
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 15px;
             text-decoration: none;
-            overflow: hidden;
-        }
-
-        /* Esquinas técnicas para cada caja (estilo escáner) */
-        .bento-item::before, .bento-item::after {
-            content: ''; position: absolute; width: 10px; height: 10px;
-            border: 1px solid transparent; transition: all 0.3s;
-        }
-        .bento-item::before { top: 5px; left: 5px; border-top-color: rgba(255, 255, 255, 0.2); border-left-color: rgba(255, 255, 255, 0.2); }
-        .bento-item::after { bottom: 5px; right: 5px; border-bottom-color: rgba(255, 255, 255, 0.2); border-right-color: rgba(255, 255, 255, 0.2); }
-
-        /* Comportamiento del PNG (Isotipo) - A TODO COLOR DESDE EL INICIO */
-        .bento-item img {
-            width: 80%; /* Más grande para que destaque */
-            max-height: 70%; 
-            object-fit: contain;
-            filter: grayscale(0%) opacity(1);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateY(-5px);
-        }
-
-        /* Tooltip con el nombre del proyecto - SIEMPRE VISIBLE */
-        .bento-tooltip {
-            position: absolute;
-            bottom: 15px; /* Lo subimos para que esté siempre en pantalla */
-            font-size: 0.75rem;
-            color: var(--accent-cyan);
-            font-family: var(--font-mono);
-            letter-spacing: 2px;
-            opacity: 1; /* Siempre visible */
+            cursor: pointer;
+            padding: 10px;
+            background: transparent;
+            border: none;
             transition: all 0.4s;
+        }
+
+        .bento-item img {
+            height: 120px; /* Tamaño tipo logo / isotipo */
+            width: auto;
+            max-width: 250px;
+            object-fit: contain;
+            filter: grayscale(100%) opacity(0.5); /* Estilo apagado inicial */
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bento-tooltip {
+            color: #888;
+            font-size: 1.1rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
             text-transform: uppercase;
             text-align: center;
-            width: 100%;
+            transition: all 0.4s ease;
         }
 
         /* HOVER: La magia interactiva de bordes y luz */
@@ -581,13 +564,13 @@
     </section>
 
     <!-- ========================================= -->
-    <!-- PORTAFOLIO (MARQUEE INFINITO)             -->
+    <!-- PORTAFOLIO (MARQUEE INFINITO ALIADOS)     -->
     <!-- ========================================= -->
     <section class="section-container" id="portafolio">
         <div class="meta-data">[ DIR: /WORK/PROJECTS ]</div>
         <h2 class="section-title">PORTAFOLIO_</h2>
         
-        <!-- Contenedor del Carrusel Infinito -->
+        <!-- Contenedor del Marquee -->
         <div class="portfolio-wrapper">
             <div class="bento-portfolio" id="bento-container">
                 <!-- Los proyectos entrarán aquí doblemente desde JS para el bucle -->
@@ -860,7 +843,7 @@
                 // Limpiamos el mensaje de carga
                 bentoContainer.innerHTML = '';
 
-                // Duplicamos el array para el efecto de marquee infinito
+                // Duplicamos el array para el efecto de marquee infinito continuo
                 const proyectosDuplicados = [...proyectos, ...proyectos];
 
                 proyectosDuplicados.forEach(proyecto => {
