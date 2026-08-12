@@ -30,8 +30,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
     <style>
         :root {
             --bg-color: #080808;
@@ -62,60 +60,61 @@
             transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
         }
 
-        #splash-webgl { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.7; }
+        .terminal-text-container {
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: left;
+            width: 90%;
+            max-width: 600px;
+        }
 
-        .splash-center-container { 
-            position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; 
+        .terminal-line {
+            margin: 5px 0;
             opacity: 0;
-            animation: fadeInSync 0.8s ease-in-out 0.2s forwards; 
+            animation: showLine 0.1s forwards;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
         }
 
-        .splash-ring {
-            position: absolute; width: 260px; height: 260px;
-            border: 1px solid rgba(0, 229, 255, 0.15); 
-            border-radius: 50%;
-            animation: spin 8s linear infinite;
-        }
-        .splash-ring::before {
-            content: ''; position: absolute; inset: 20px; 
-            border: 2px dashed rgba(255, 85, 0, 0.4);
-            border-radius: 50%; animation: spin-reverse 12s linear infinite; 
-        }
-        .splash-ring::after {
-            content: ''; position: absolute; inset: -15px; 
-            border: 2px solid transparent;
-            border-top-color: var(--accent-cyan);
-            border-bottom-color: var(--accent-cyan);
-            border-radius: 50%;
-            animation: spin 4s ease-in-out infinite alternate;
-        }
-
-        .splash-scanner {
-            position: absolute;
-            width: 180px;
-            height: 2px;
+        .terminal-line span.cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
             background: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-cyan);
-            z-index: 4;
-            animation: scan 2.5s ease-in-out infinite alternate;
+            animation: blink 0.8s infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+            box-shadow: 0 0 10px var(--accent-cyan);
         }
 
-        .splash-logo {
-            position: relative; width: 140px; z-index: 3;
-            animation: pulse-logo 2s infinite alternate;
-        }
-
-        .loading-text {
-            position: absolute; bottom: -100px; font-family: var(--font-mono); font-size: 0.8rem;
-            color: var(--accent-cyan); letter-spacing: 5px; animation: blink 1s infinite step-start;
-        }
-
-        @keyframes fadeInSync { to { opacity: 1; } }
-        @keyframes scan { 0% { transform: translateY(-70px); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(70px); opacity: 0; } }
-        @keyframes pulse-logo { 0% { filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5)); transform: scale(1); } 100% { filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.9)) drop-shadow(0 0 40px rgba(255,85,0,0.3)); transform: scale(1.05); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        @keyframes showLine { to { opacity: 1; } }
         @keyframes blink { 50% { opacity: 0; } }
+
+        /* EFECTO CRT Y RUIDO */
+        .crt-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px;
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* CLASES PARA SCROLL REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* ========================================= */
         /* RESTO DE LA PÁGINA                        */
@@ -610,16 +609,13 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA (SPLASH SCREEN) -->
+    <!-- PANTALLA DE CARGA (TERMINAL PRELOADER) -->
     <div id="splash-screen">
-        <canvas id="splash-webgl"></canvas>
-        <div class="splash-center-container">
-            <div class="splash-ring"></div>
-            <div class="splash-scanner"></div>
-            <img src="img/growisotipo.png" class="splash-logo" alt="Grow Studio Isotipo">
-            <div class="loading-text">SYSTEM_BOOTING // GROW_STUDIO</div>
-        </div>
+        <div class="terminal-text-container" id="terminal-container"></div>
     </div>
+
+    <!-- EFECTO CRT (SCANLINES) -->
+    <div class="crt-overlay"></div>
 
     <!-- FONDO DE PARTÍCULAS -->
     <div id="tsparticles"></div>
@@ -635,7 +631,8 @@
             <a href="#inicio">01.Inicio</a>
             <a href="#servicios">02.Servicios</a>
             <a href="#portafolio">03.Portafolio</a>
-            <a href="#nosotros">04.Nosotros</a>
+            <a href="#faq">04.FAQ</a>
+            <a href="#nosotros">05.Nosotros</a>
         </div>
     </nav>
 
@@ -832,72 +829,68 @@
     
     <script>
         /* ========================================= */
-        /* LÓGICA DEL SPLASH SCREEN Y ORBE WEBGL     */
         /* ========================================= */
-        let splashActive = true;
+        /* LÓGICA DEL SPLASH SCREEN (TERMINAL)       */
+        /* ========================================= */
         const splashScreen = document.getElementById('splash-screen');
+        const terminalContainer = document.getElementById('terminal-container');
         
-        setTimeout(() => {
-            splashScreen.style.opacity = '0';
-            splashScreen.style.visibility = 'hidden';
-            document.body.style.overflowY = 'auto'; 
-            splashActive = false;
-        }, 4000);
+        const bootSequence = [
+            "> INICIALIZANDO NÚCLEO GROW_STUDIO...",
+            "> CARGANDO INTERFACES HOLOGRÁFICAS...",
+            "> ESTABLECIENDO CONEXIÓN SEGURA...",
+            "> SISTEMA OPTIMIZADO AL 100%",
+            "> [ ACCESO CONCEDIDO ]"
+        ];
+        
+        let bootIndex = 0;
+        
+        function typeBootSequence() {
+            if (bootIndex < bootSequence.length) {
+                // Remover el cursor de la línea anterior si existe
+                const oldCursor = document.querySelector('.cursor');
+                if (oldCursor) oldCursor.remove();
 
-        const splashCanvas = document.getElementById('splash-webgl');
-        const splashScene = new THREE.Scene();
-        const splashCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        splashCamera.position.z = 5;
-        const splashRenderer = new THREE.WebGLRenderer({ canvas: splashCanvas, alpha: true, antialias: true });
-        splashRenderer.setSize(window.innerWidth, window.innerHeight);
-
-        const orbGeometry = new THREE.IcosahedronGeometry(2.5, 60);
-        const orbMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                uTime: { value: 0 },
-                uColor1: { value: new THREE.Color('#00E5FF') },
-                uColor2: { value: new THREE.Color('#FF5500') }
-            },
-            vertexShader: `
-                uniform float uTime; varying vec2 vUv; varying float vDistortion;
-                float snoise(vec3 v) { return sin(v.x * 2.0 + uTime) * cos(v.y * 2.0 + uTime) * sin(v.z * 2.0 + uTime); }
-                void main() {
-                    vUv = uv;
-                    float distortion = snoise(position + uTime * 0.5) * 0.4;
-                    vDistortion = distortion;
-                    vec3 newPosition = position + normal * distortion;
-                    vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
-                    gl_Position = projectionMatrix * mvPosition;
-                    gl_PointSize = 2.0 * (1.0 / -mvPosition.z);
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 uColor1; uniform vec3 uColor2; varying float vDistortion;
-                void main() {
-                    float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
-                    if (distanceToCenter > 0.5) discard;
-                    float mixValue = (vDistortion + 0.3) * 1.5;
-                    vec3 finalColor = mix(uColor1, uColor2, mixValue);
-                    gl_FragColor = vec4(finalColor, (1.0 - distanceToCenter * 2.0) * 0.4);
-                }
-            `,
-            transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-        });
-
-        const orbMesh = new THREE.Points(orbGeometry, orbMaterial);
-        splashScene.add(orbMesh);
-
-        const orbClock = new THREE.Clock();
-        function animateSplashOrb() {
-            if (!splashActive) return; 
-            requestAnimationFrame(animateSplashOrb);
-            const elapsedTime = orbClock.getElapsedTime();
-            orbMaterial.uniforms.uTime.value = elapsedTime;
-            orbMesh.rotation.y = elapsedTime * 0.1;
-            orbMesh.rotation.z = elapsedTime * 0.05;
-            splashRenderer.render(splashScene, splashCamera);
+                const p = document.createElement('div');
+                p.className = 'terminal-line';
+                p.innerHTML = bootSequence[bootIndex] + '<span class="cursor"></span>';
+                terminalContainer.appendChild(p);
+                
+                bootIndex++;
+                
+                // Variar velocidad de carga para más realismo
+                const delay = bootIndex === bootSequence.length ? 600 : Math.random() * 300 + 150;
+                setTimeout(typeBootSequence, delay);
+            } else {
+                // Termina la secuencia, desvanece la pantalla
+                setTimeout(() => {
+                    splashScreen.style.opacity = '0';
+                    splashScreen.style.visibility = 'hidden';
+                    document.body.style.overflowY = 'auto'; 
+                }, 500);
+            }
         }
-        animateSplashOrb();
+        
+        // Evitamos scroll mientras carga
+        document.body.style.overflowY = 'hidden';
+        setTimeout(typeBootSequence, 300);
+
+        /* ========================================= */
+        /* LÓGICA DE SCROLL REVEAL (ANIMACIÓN)       */
+        /* ========================================= */
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        // Seleccionamos todas las secciones, les ponemos la clase base y las observamos
+        document.querySelectorAll('.section-container').forEach(sec => {
+            sec.classList.add('reveal');
+            revealObserver.observe(sec);
+        });
 
         /* ========================================= */
         /* LÓGICA DE LA PÁGINA PRINCIPAL             */
