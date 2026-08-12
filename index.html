@@ -282,6 +282,117 @@
         .manifesto-text span.iluminado { color: #FFFFFF; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
         .manifesto-text span:hover { color: var(--accent-cyan) !important; text-shadow: 0 0 20px var(--accent-cyan) !important; transition: 0s; }
 
+        /* ========================================= */
+        /* SECCIÓN TECH STACK (MARQUEE TEXTO)        */
+        /* ========================================= */
+        .tech-marquee-wrapper {
+            width: 100%;
+            overflow: hidden;
+            border-top: 1px solid var(--grid-color);
+            border-bottom: 1px solid var(--grid-color);
+            background: rgba(0, 229, 255, 0.02);
+            padding: 15px 0;
+            position: relative;
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+
+        .tech-track {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            width: max-content;
+            animation: scrollTech 20s linear infinite;
+        }
+
+        @keyframes scrollTech {
+            to { transform: translateX(calc(-50% - 15px)); }
+        }
+
+        .tech-track span {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .tech-track span.dot {
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+
+        /* ========================================= */
+        /* SECCIÓN FAQ (PREGUNTAS FRECUENTES)        */
+        /* ========================================= */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--grid-color);
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .faq-item[open] {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1) inset;
+        }
+
+        .faq-question {
+            padding: 20px 25px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: #fff;
+            cursor: pointer;
+            list-style: none; /* Oculta la flecha en la mayoría de navegadores */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .faq-question::-webkit-details-marker { display: none; } /* Safari */
+
+        .faq-question::after {
+            content: '+';
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            font-weight: 400;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-item[open] .faq-question::after {
+            transform: rotate(45deg);
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        .faq-answer {
+            padding: 0 25px 25px;
+            color: #888;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: fadeInFaq 0.4s ease-out;
+        }
+        
+        .faq-answer strong { color: #fff; }
+
+        @keyframes fadeInFaq {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .whatsapp-btn { position: fixed; bottom: 40px; right: 40px; border: 1px solid var(--accent-orange); background: rgba(255, 85, 0, 0.1); color: var(--accent-orange); padding: 15px 20px; text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; z-index: 1000; backdrop-filter: blur(5px); transition: all 0.3s; }
         .whatsapp-btn:hover { background: var(--accent-orange); color: #000; }
 
@@ -577,6 +688,50 @@
             </div>
         </div>
     </section>
+    <!-- ========================================= -->
+    <!-- PREGUNTAS FRECUENTES (FAQ)                -->
+    <!-- ========================================= -->
+    <section class="section-container" id="faq">
+        <div class="meta-data">[ DIR: /INFO/SUPPORT_DB ]</div>
+        <h2 class="section-title">F.A.Q_</h2>
+        
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary class="faq-question">¿CUÁNTO TIEMPO TOMA DESARROLLAR UNA WEB?</summary>
+                <div class="faq-answer">
+                    Depende de la complejidad técnica. Una <strong>Landing Page</strong> puede estar lista y optimizada en 1 a 2 semanas, mientras que una <strong>Web App a medida</strong> o E-commerce toma a partir de 4 semanas. Privilegiamos la calidad de código y rendimiento por encima de la velocidad de entrega a medias.
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">¿INCLUYEN DOMINIO Y HOSTING EN EL SERVICIO?</summary>
+                <div class="faq-answer">
+                    Sí, configuramos todo el entorno de producción para tu proyecto. Normalmente incluimos el primer año de Hosting Premium ultrarrápido y tu Dominio (.com / .net) en nuestros paquetes integrales para que tú solo te preocupes por el marketing.
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">¿MI PÁGINA ESTARÁ ADAPTADA PARA CELULARES?</summary>
+                <div class="faq-answer">
+                    Absolutamente. Desarrollamos bajo la arquitectura <em>'Mobile First'</em>, garantizando que tu web se vea y funcione de manera impecable y rápida en cualquier dispositivo móvil, maximizando tu tasa de conversión.
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">¿HACEN EL MANTENIMIENTO DESPUÉS DEL LANZAMIENTO?</summary>
+                <div class="faq-answer">
+                    Claro que sí. Ofrecemos planes de mantenimiento técnico continuo para asegurar que tu sistema se mantenga actualizado, seguro ante vulnerabilidades, y escalable a medida que el tráfico de tu negocio vaya creciendo.
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">¿QUÉ TECNOLOGÍAS UTILIZAN PARA PROGRAMAR?</summary>
+                <div class="faq-answer">
+                    Rechazamos los constructores pesados (como WordPress/Elementor básico) que hacen las webs lentas. Trabajamos con <strong>código puro</strong> y frameworks modernos: Next.js, React, Node.js y Tailwind CSS. Esto garantiza velocidades de carga extremas (vital para el SEO de Google) y seguridad impenetrable.
+                </div>
+            </details>
+        </div>
+    </section>
 
     <!-- NOSOTROS -->
     <section class="section-container" id="nosotros">
@@ -587,6 +742,37 @@
             <p class="manifesto-text" id="manifesto-text">
                 No somos una agencia tradicional. Escalamos negocios a través de código puro, data y diseño inmersivo. Construimos el futuro digital de tu marca.
             </p>
+        </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- TECH STACK (CARRUSEL DE TECNOLOGÍAS)      -->
+    <!-- ========================================= -->
+    <section style="padding-bottom: 100px;">
+        <div class="meta-data" style="text-align: center; margin-bottom: 25px;">[ SYSTEM.DEPENDENCIES ]</div>
+        <div class="tech-marquee-wrapper">
+            <div class="tech-track">
+                <span>[ NEXT.JS ]</span><span class="dot">•</span>
+                <span>[ REACT ]</span><span class="dot">•</span>
+                <span>[ NODE.JS ]</span><span class="dot">•</span>
+                <span>[ GOOGLE CLOUD ]</span><span class="dot">•</span>
+                <span>[ VERCEL ]</span><span class="dot">•</span>
+                <span>[ FIGMA ]</span><span class="dot">•</span>
+                <span>[ TAILWIND CSS ]</span><span class="dot">•</span>
+                <span>[ TYPESCRIPT ]</span><span class="dot">•</span>
+                <span>[ PYTHON ]</span><span class="dot">•</span>
+                
+                <!-- DUPLICADO PARA BUCLE PERFECTO -->
+                <span>[ NEXT.JS ]</span><span class="dot">•</span>
+                <span>[ REACT ]</span><span class="dot">•</span>
+                <span>[ NODE.JS ]</span><span class="dot">•</span>
+                <span>[ GOOGLE CLOUD ]</span><span class="dot">•</span>
+                <span>[ VERCEL ]</span><span class="dot">•</span>
+                <span>[ FIGMA ]</span><span class="dot">•</span>
+                <span>[ TAILWIND CSS ]</span><span class="dot">•</span>
+                <span>[ TYPESCRIPT ]</span><span class="dot">•</span>
+                <span>[ PYTHON ]</span><span class="dot">•</span>
+            </div>
         </div>
     </section>
 
