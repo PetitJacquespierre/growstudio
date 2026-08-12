@@ -882,27 +882,64 @@
             }
         });
 
-        // Simulación de envío (luego conectamos a Vercel)
-        document.getElementById('contact-form').addEventListener('submit', (e) => {
+        // Envío de formulario real a través de FormSubmit
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = e.target.querySelector('.submit-btn');
             
+            // Recolectar datos
+            const nombre = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            const telefono = document.getElementById('form-phone').value;
+            const mensaje = document.getElementById('form-message').value;
+
             // Animación de estado
             submitBtn.innerText = '[ PROCESANDO... ]';
             
-            setTimeout(() => {
-                submitBtn.innerText = '[ TRANSACCIÓN EXITOSA ]';
-                submitBtn.style.background = 'var(--accent-cyan)';
-                submitBtn.style.color = '#000';
+            try {
+                // Enviamos a FormSubmit (se enviará a growstudio.w@gmail.com)
+                const response = await fetch("https://formsubmit.co/ajax/growstudio.w@gmail.com", {
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre,
+                        email,
+                        telefono,
+                        mensaje,
+                        _subject: `🔥 NUEVA COTIZACIÓN: ${nombre}`
+                    })
+                });
+
+                if (response.ok) {
+                    submitBtn.innerText = '[ TRANSACCIÓN EXITOSA ]';
+                    submitBtn.style.background = 'var(--accent-cyan)';
+                    submitBtn.style.color = '#000';
+                    
+                    setTimeout(() => {
+                        modalOverlay.classList.remove('active');
+                        e.target.reset(); // Limpia el formulario
+                        submitBtn.innerText = '[ ENVIAR SOLICITUD ]';
+                        submitBtn.style.background = 'transparent';
+                        submitBtn.style.color = 'var(--accent-cyan)';
+                    }, 2000);
+                } else {
+                    throw new Error('Error al enviar');
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                submitBtn.innerText = '[ ERROR EN TRANSACCIÓN ]';
+                submitBtn.style.background = 'red';
+                submitBtn.style.color = '#fff';
                 
                 setTimeout(() => {
-                    modalOverlay.classList.remove('active');
-                    e.target.reset(); // Limpia el formulario
-                    submitBtn.innerText = '[ EJECUTAR ]';
+                    submitBtn.innerText = '[ ENVIAR SOLICITUD ]';
                     submitBtn.style.background = 'transparent';
                     submitBtn.style.color = 'var(--accent-cyan)';
-                }, 2000);
-            }, 1500);
+                }, 3000);
+            }
         });
 
 
