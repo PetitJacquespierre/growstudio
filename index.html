@@ -179,17 +179,40 @@
         .service-desc { font-size: 0.9rem; color: #888; max-width: 300px; text-align: right; position: relative; z-index: 1; line-height: 1.5; }
 
         /* ========================================= */
-        /* SECCIÓN PORTAFOLIO (BENTO GRID HUD)       */
+        /* SECCIÓN PORTAFOLIO (MARQUEE INFINITO)     */
         /* ========================================= */
-        .bento-portfolio {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 columnas en PC */
-            gap: 20px;
+        .portfolio-wrapper {
+            width: 100%;
+            overflow: hidden;
             margin-top: 40px;
+            position: relative;
+            /* Difuminado a los lados para un efecto más limpio */
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .bento-portfolio {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            animation: scrollMarquee 25s linear infinite;
+        }
+
+        .bento-portfolio:hover {
+            animation-play-state: paused; /* Se detiene al poner el mouse encima */
+        }
+
+        @keyframes scrollMarquee {
+            to {
+                /* Nos desplazamos exactamente el 50% (que es la mitad duplicada) más la mitad de un gap (10px) */
+                transform: translateX(calc(-50% - 10px));
+            }
         }
 
         .bento-item {
-            aspect-ratio: 1 / 1; /* Mantiene las cajas perfectamente cuadradas */
+            width: 320px; /* Ancho fijo grande para que se vea toda la imagen */
+            height: 220px;
+            flex-shrink: 0;
             border: 1px solid rgba(0, 229, 255, 0.15);
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(5px);
@@ -212,19 +235,19 @@
 
         /* Comportamiento del PNG (Isotipo) - A TODO COLOR DESDE EL INICIO */
         .bento-item img {
-            width: 50%;
-            max-height: 45%; 
+            width: 80%; /* Más grande para que destaque */
+            max-height: 70%; 
             object-fit: contain;
-            filter: grayscale(0%) opacity(1); /* Color natural siempre */
+            filter: grayscale(0%) opacity(1);
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateY(-10px); /* Lo subimos un poco para hacerle espacio al texto */
+            transform: translateY(-5px);
         }
 
         /* Tooltip con el nombre del proyecto - SIEMPRE VISIBLE */
         .bento-tooltip {
             position: absolute;
             bottom: 15px; /* Lo subimos para que esté siempre en pantalla */
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--accent-cyan);
             font-family: var(--font-mono);
             letter-spacing: 2px;
@@ -247,7 +270,7 @@
         .bento-item:hover img {
             /* Agrega el resplandor neón sin perder el color */
             filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.8));
-            transform: scale(1.1) translateY(-15px); /* Salta un poquito más hacia arriba */
+            transform: scale(1.05) translateY(-10px); 
         }
         
         .bento-item:hover .bento-tooltip {
@@ -558,15 +581,17 @@
     </section>
 
     <!-- ========================================= -->
-    <!-- PORTAFOLIO (BENTO GRID DINÁMICO)          -->
+    <!-- PORTAFOLIO (MARQUEE INFINITO)             -->
     <!-- ========================================= -->
     <section class="section-container" id="portafolio">
         <div class="meta-data">[ DIR: /WORK/PROJECTS ]</div>
         <h2 class="section-title">PORTAFOLIO_</h2>
         
-        <!-- Este contenedor se llenará automáticamente con JS desde Google Sheets -->
-        <div class="bento-portfolio" id="bento-container">
-            <!-- Los proyectos entrarán aquí mágicamente -->
+        <!-- Contenedor del Carrusel Infinito -->
+        <div class="portfolio-wrapper">
+            <div class="bento-portfolio" id="bento-container">
+                <!-- Los proyectos entrarán aquí doblemente desde JS para el bucle -->
+            </div>
         </div>
     </section>
 
@@ -835,20 +860,28 @@
                 // Limpiamos el mensaje de carga
                 bentoContainer.innerHTML = '';
 
-                // Recorremos los proyectos y los inyectamos en el HTML
-                proyectos.forEach(proyecto => {
-                    const a = document.createElement('a');
-                    a.href = proyecto.enlace;
-                    a.target = "_blank";
-                    a.className = "bento-item";
-                    
-                    a.innerHTML = `
-                        <img src="${proyecto.imagen}" alt="${proyecto.titulo}">
-                        <span class="bento-tooltip">${proyecto.titulo}</span>
-                    `;
-                    
-                    bentoContainer.appendChild(a);
-                });
+                // Función para inyectar los proyectos (lo haremos dos veces para el bucle infinito)
+                const inyectarProyectos = () => {
+                    proyectos.forEach(proyecto => {
+                        const a = document.createElement('a');
+                        a.href = proyecto.enlace;
+                        a.target = "_blank";
+                        a.className = "bento-item";
+                        
+                        a.innerHTML = `
+                            <img src="${proyecto.imagen}" alt="${proyecto.titulo}">
+                            <span class="bento-tooltip">${proyecto.titulo}</span>
+                        `;
+                        
+                        bentoContainer.appendChild(a);
+                    });
+                };
+
+                // Inyectamos la primera vez
+                inyectarProyectos();
+                
+                // Inyectamos la segunda vez (el duplicado es necesario para que el marquee parezca infinito sin cortes)
+                inyectarProyectos();
             } catch (error) {
                 console.error("Fallo la conexión:", error);
                 bentoContainer.innerHTML = '<div style="color: red;">[ SYSTEM_OFFLINE ]</div>';
