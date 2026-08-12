@@ -860,31 +860,26 @@
                 // Limpiamos el mensaje de carga
                 bentoContainer.innerHTML = '';
 
-                // Función para inyectar los proyectos (lo haremos dos veces para el bucle infinito)
-                const inyectarProyectos = () => {
-                    proyectos.forEach(proyecto => {
-                        const a = document.createElement('a');
-                        a.href = proyecto.enlace;
-                        a.target = "_blank";
-                        a.className = "bento-item";
-                        
-                        a.innerHTML = `
-                            <img src="${proyecto.imagen}" alt="${proyecto.titulo}">
-                            <span class="bento-tooltip">${proyecto.titulo}</span>
-                        `;
-                        
-                        bentoContainer.appendChild(a);
-                    });
-                };
+                // Duplicamos el array para el efecto de marquee infinito
+                const proyectosDuplicados = [...proyectos, ...proyectos];
 
-                // Inyectamos la primera vez
-                inyectarProyectos();
-                
-                // Inyectamos la segunda vez (el duplicado es necesario para que el marquee parezca infinito sin cortes)
-                inyectarProyectos();
+                proyectosDuplicados.forEach(proyecto => {
+                    const a = document.createElement('a');
+                    a.href = proyecto.enlace;
+                    a.target = "_blank";
+                    a.className = "bento-item";
+                    
+                    a.innerHTML = `
+                        <img src="${proyecto.imagen}" alt="${proyecto.titulo}">
+                        <span class="bento-tooltip">${proyecto.titulo}</span>
+                    `;
+                    
+                    bentoContainer.appendChild(a);
+                });
+
             } catch (error) {
                 console.error("Fallo la conexión:", error);
-                bentoContainer.innerHTML = '<div style="color: red;">[ SYSTEM_OFFLINE ]</div>';
+                bentoContainer.innerHTML = `<div style="color: red; font-size: 0.8rem;">[ ERROR: ${error.message} ]</div>`;
             }
         }
 
