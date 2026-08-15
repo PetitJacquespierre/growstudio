@@ -1,0 +1,393 @@
+/* ========================================= */
+/* VARIABLES GLOBALES Y RESET                */
+/* ========================================= */
+:root {
+    --bg-dark: #0f111a;
+    --card-bg: rgba(26, 26, 26, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-muted: #a0aab2;
+    --primary: #ffc107; /* Amarillo Grow Studio */
+    --primary-hover: #e0a800;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    
+    --orb-1: #ffc107; /* Amarillo Brillante */
+    --orb-2: #f59e0b; /* Dorado / Naranja */
+    --orb-3: #ffffff; /* Destello Blanco */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ========================================= */
+/* BACKGROUND ORBS (Glassmorphism effect)    */
+/* ========================================= */
+.orbs-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    filter: blur(80px);
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: floatOrb 15s infinite alternate ease-in-out;
+}
+
+.orb-1 {
+    width: 40vw; height: 40vw; max-width: 400px; max-height: 400px;
+    background: var(--orb-1);
+    top: -10%; left: -10%;
+    animation-duration: 12s;
+}
+
+.orb-2 {
+    width: 50vw; height: 50vw; max-width: 500px; max-height: 500px;
+    background: var(--orb-2);
+    bottom: -20%; right: -10%;
+    animation-duration: 18s;
+}
+
+.orb-3 {
+    width: 30vw; height: 30vw; max-width: 300px; max-height: 300px;
+    background: var(--orb-3);
+    top: 40%; left: 50%;
+    animation-duration: 14s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, 60px) scale(1.1); }
+}
+
+/* ========================================= */
+/* LAYOUT & CARDS                            */
+/* ========================================= */
+.container {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    z-index: 10;
+}
+
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    display: none;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.glass-card.active {
+    display: block;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================= */
+/* LOGIN SCREEN                              */
+/* ========================================= */
+.logo-container {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo-img {
+    width: 130px;
+    margin: 0 auto 15px auto;
+    display: inline-block;
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
+    animation: pulseLogo 2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseLogo {
+    0% { transform: scale(0.95); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)); }
+    100% { transform: scale(1.05); filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.8)); }
+}
+
+.logo-icon {
+    font-size: 3.5rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 15px rgba(74, 222, 128, 0.4));
+}
+
+.logo-container h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.logo-container p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* ========================================= */
+/* FORMS & INPUTS                            */
+/* ========================================= */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.w-50 { width: 50%; }
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+label i { margin-right: 5px; }
+
+input, select {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: rgba(0,0,0,0.4);
+    color: white;
+    font-size: 1rem;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: all 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+select option {
+    background: var(--bg-dark);
+    color: white;
+}
+
+/* ========================================= */
+/* BUTTONS                                   */
+/* ========================================= */
+button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #000;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #ffffff;
+    color: #000;
+    margin-top: 10px;
+}
+
+.btn-success:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.btn-logout {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    width: auto;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    float: right;
+    border-radius: 8px;
+    margin-top: -20px;
+    margin-right: -10px;
+}
+
+.btn-logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========================================= */
+/* DASHBOARD UI                              */
+/* ========================================= */
+.header-info {
+    margin-bottom: 25px;
+    clear: both;
+}
+
+.header-info h3 {
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.proyecto-badge {
+    color: var(--primary);
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.status-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 20px 15px;
+    text-align: center;
+}
+
+.status-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.deuda-monto {
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.badge-active {
+    background: rgba(74, 222, 128, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.badge-suspended {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: var(--border-glass);
+    margin: 25px 0;
+}
+
+.report-section h4 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.report-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+/* ========================================= */
+/* HELPERS                                   */
+/* ========================================= */
+.error-msg, .msg-box {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 20px;
+}
+
+.error-msg { color: var(--danger); }
+.success-msg { color: var(--primary); }
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.3);
+    border-radius: 50%;
+    border-top-color: #000;
+    animation: spin 1s ease-in-out infinite;
+}
+
+.spinner.white {
+    border-color: rgba(255,255,255,0.3);
+    border-top-color: #fff;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
