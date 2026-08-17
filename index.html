@@ -607,6 +607,214 @@
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
             animation: none; /* Se detiene el pulso si le pasas el ratón */
         }
+
+        /* ========================================= */
+        /* MICRO-SAAS FEATURED SECTION               */
+        /* ========================================= */
+        .saas-featured {
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.03) 0%, rgba(0, 0, 0, 0.95) 100%);
+            border-top: 1px solid var(--accent-cyan);
+            border-bottom: 1px solid var(--grid-color);
+            overflow: hidden;
+            padding: 80px 100px;
+            z-index: 30; /* Pasa por encima del Hero (z-index: 10) y la G */
+        }
+
+        .saas-featured::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,229,255,0.05) 0%, transparent 50%);
+            animation: rotateBg 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes rotateBg {
+            100% { transform: rotate(360deg); }
+        }
+
+        .saas-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .saas-text h3 {
+            font-family: var(--font-head);
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            color: var(--text-main);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .saas-text h3 span {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        .saas-desc {
+            font-size: 0.95rem;
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            border-left: 2px solid var(--accent-orange);
+            padding-left: 15px;
+        }
+
+        .saas-features {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .saas-feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 20px;
+            border: 1px solid var(--grid-color);
+            transition: all 0.3s;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+        .saas-feature-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(10px);
+            box-shadow: -5px 0 15px rgba(0, 229, 255, 0.1);
+        }
+
+        .saas-feature-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+        }
+
+        .saas-feature-icon svg {
+            width: 28px;
+            height: 28px;
+            filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.4));
+        }
+
+        .saas-feature-text h4 {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .saas-feature-text p {
+            color: #888;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .saas-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .saas-card {
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid var(--accent-cyan);
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15), inset 0 0 20px rgba(0, 229, 255, 0.05);
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(15px);
+            z-index: 1000; /* Incrementado para que las figuras animadas pasen por debajo */
+        }
+
+        .saas-card::after {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 1px dashed var(--accent-orange);
+            z-index: -1;
+            opacity: 0.3;
+            animation: pulse-border 2s infinite alternate;
+        }
+
+        .saas-card-header {
+            font-family: var(--font-head);
+            color: var(--accent-orange);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 85, 0, 0.3);
+        }
+
+        .saas-pricing {
+            font-family: var(--font-mono);
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.02);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .saas-pricing span {
+            color: #fff;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .saas-pricing strong {
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+        }
+        
+        .saas-action {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 30px;
+            padding: 15px 30px;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .saas-action:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 900px) {
+            .saas-content { grid-template-columns: 1fr; gap: 40px; }
+            .saas-featured { padding: 60px 20px; }
+        }
+
         @media (max-width: 768px) {
             nav { padding: 20px; flex-direction: column; gap: 15px; }
             .menu { font-size: 0.7rem; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -681,6 +889,84 @@
         </div>
     </header>
 
+    <!-- ========================================= -->
+    <!-- MICRO-SAAS (PRODUCTO ESTRELLA)            -->
+    <!-- ========================================= -->
+    <section class="saas-featured" id="micro-saas">
+        <div class="meta-data">[ DIR: /PRODUCTS/MICRO_SAAS ]</div>
+        <h2 class="section-title" style="color: var(--accent-orange); margin-bottom: 40px;">SISTEMAS_DE_PEDIDO_</h2>
+        
+        <div class="saas-content">
+            <div class="saas-text">
+                <h3>Menús Digitales <span>Interactivos</span></h3>
+                <p class="saas-desc">
+                    Transformamos la manera en que tus clientes te compran. Olvídate de enviar fotos del menú por WhatsApp. Desarrollamos plataformas web a medida (Micro-SaaS) diseñadas para que tus clientes exploren, elijan y pidan directamente a tu WhatsApp en segundos.
+                </p>
+                
+                <div class="saas-features">
+                    <div class="saas-feature-item">
+                        <div class="saas-feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        </div>
+                        <div class="saas-feature-text">
+                            <h4>Mobile-First</h4>
+                            <p>Experiencia fluida como app nativa, ideal para el 90% de clientes que compran desde el celular.</p>
+                        </div>
+                    </div>
+                    <div class="saas-feature-item">
+                        <div class="saas-feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        </div>
+                        <div class="saas-feature-text">
+                            <h4>WhatsApp Integrado</h4>
+                            <p>Pedidos estructurados directo a tu chat. Sin intermediarios ni comisiones por venta.</p>
+                        </div>
+                    </div>
+                    <div class="saas-feature-item">
+                        <div class="saas-feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 12 12 17 22 12"></polyline><polyline points="2 17 12 22 22 17"></polyline></svg>
+                        </div>
+                        <div class="saas-feature-text">
+                            <h4>Identidad Visual</h4>
+                            <p>Adaptamos la interfaz con tus colores, logo y branding para máximo profesionalismo.</p>
+                        </div>
+                    </div>
+                    <div class="saas-feature-item">
+                        <div class="saas-feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        </div>
+                        <div class="saas-feature-text">
+                            <h4>100% Actualizado</h4>
+                            <p>Mantenimiento continuo. Cambia precios o platillos sin estrés, nosotros nos encargamos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#contacto" class="saas-action" onclick="document.querySelector('.modal-overlay').classList.add('active'); return false;">> SOLICITAR_DEMO</a>
+            </div>
+            
+            <div class="saas-visual">
+                <div class="saas-card">
+                    <div class="saas-card-header">MODELO DE INVERSIÓN</div>
+                    <p style="color: #888; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5; text-align: center;">Tu aliado tecnológico a largo plazo. Un modelo accesible pensado para escalar tu negocio gastronómico.</p>
+                    
+                    <div class="saas-pricing">
+                        <span>Setup Inicial</span>
+                        <strong style="color: #fff; font-size: 1rem; text-shadow: none;">(Desarrollo a medida)</strong>
+                    </div>
+                    
+                    <div style="text-align: center; color: var(--accent-cyan); font-size: 1.5rem; margin: 10px 0;">+</div>
+                    
+                    <div class="saas-pricing" style="margin-bottom: 0; border-color: var(--accent-orange); background: rgba(255, 85, 0, 0.05);">
+                        <span style="color: var(--accent-orange);">Suscripción Mensual</span>
+                        <strong style="color: var(--text-main); font-size: 0.9rem; text-shadow: none;">(Mantenimiento y Hosting)</strong>
+                        <div style="margin-top: 10px; font-size: 0.8rem; color: var(--accent-cyan); font-weight: bold; text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);">TÚ ERES EL DUEÑO DE TUS VENTAS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- SERVICIOS -->
     <section class="section-container" id="servicios">
         <div class="meta-data">[ DIR: /SERVICES/CORE_MODULES ]</div>
@@ -697,9 +983,9 @@
                 <div class="service-desc">Sitios de alta conversión optimizados para campañas publicitarias y velocidad extrema.</div>
             </div>
             
-            <div class="service-row">
-                <div class="service-title">Menús QR</div>
-                <div class="service-desc">Ecosistemas digitales dinámicos para el sector gastronómico con gestión en tiempo real.</div>
+            <div class="service-row" style="cursor: pointer;" onclick="document.getElementById('micro-saas').scrollIntoView({behavior: 'smooth'});">
+                <div class="service-title">Sistemas SaaS</div>
+                <div class="service-desc">Plataformas web de pedidos directos a WhatsApp, sin comisiones y con menús interactivos. <br><span style="color: var(--accent-cyan); font-size: 0.8rem;">[VER PRODUCTO ESTRELLA]</span></div>
             </div>
         </div>
     </section>
