@@ -1,4 +1,4 @@
-﻿import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -46,12 +46,12 @@ async function cargarPortafolioFirebase() {
             const box = document.createElement('div');
             box.className = 'bento-box';
             box.style.backgroundImage = 'url("' + proyecto.imagen + '")';
-            box.innerHTML = 
+            box.innerHTML = `
                 <div class="overlay">
-                    <h3>\</h3>
-                    <a href="\" target="_blank">INSPECCIONAR_SISTEMA <i class="fas fa-external-link-alt"></i></a>
+                    <h3>${proyecto.titulo}</h3>
+                    <a href="${proyecto.enlace}" target="_blank">INSPECCIONAR_SISTEMA <i class="fas fa-external-link-alt"></i></a>
                 </div>
-            ;
+            `;
             bentoContainer.appendChild(box);
         });
     } catch (error) {
