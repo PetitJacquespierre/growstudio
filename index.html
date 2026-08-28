@@ -985,7 +985,47 @@
         
         <div class="portfolio-wrapper">
             <div class="bento-portfolio" id="bento-container">
-                <!-- Los proyectos entrarán aquí dinámicamente desde JS -->
+                <a href="https://sandiaproduction.vercel.app/" target="_blank" class="bento-item">
+                    <img src="img/sandiaproduction.png" alt="Sandia Production">
+                    <span class="bento-tooltip">Sandia Production</span>
+                </a>
+                <a href="http://www.retovirtualvzla.com" target="_blank" class="bento-item">
+                    <img src="img/retovirtualvzla.png" alt="Reto Virtual Vzla">
+                    <span class="bento-tooltip">Reto Virtual Vzla</span>
+                </a>
+                <a href="http://milechuga.netlify.app/" target="_blank" class="bento-item">
+                    <img src="img/milechuga.png" alt="Mi Lechuga">
+                    <span class="bento-tooltip">Mi Lechuga</span>
+                </a>
+                <a href="https://zephyrapromo33.netlify.app/" target="_blank" class="bento-item">
+                    <img src="img/ZEPHYRA.png" alt="Zephyra Promo">
+                    <span class="bento-tooltip">Zephyra Promo</span>
+                </a>
+                <a href="https://pasteleslaflaca.vercel.app/" target="_blank" class="bento-item">
+                    <img src="img/pasteleslaflaca.png" alt="Pasteles La Flaca">
+                    <span class="bento-tooltip">Pasteles La Flaca</span>
+                </a>
+                <!-- Duplicados para el scroll -->
+                <a href="https://sandiaproduction.vercel.app/" target="_blank" class="bento-item">
+                    <img src="img/sandiaproduction.png" alt="Sandia Production">
+                    <span class="bento-tooltip">Sandia Production</span>
+                </a>
+                <a href="http://www.retovirtualvzla.com" target="_blank" class="bento-item">
+                    <img src="img/retovirtualvzla.png" alt="Reto Virtual Vzla">
+                    <span class="bento-tooltip">Reto Virtual Vzla</span>
+                </a>
+                <a href="http://milechuga.netlify.app/" target="_blank" class="bento-item">
+                    <img src="img/milechuga.png" alt="Mi Lechuga">
+                    <span class="bento-tooltip">Mi Lechuga</span>
+                </a>
+                <a href="https://zephyrapromo33.netlify.app/" target="_blank" class="bento-item">
+                    <img src="img/ZEPHYRA.png" alt="Zephyra Promo">
+                    <span class="bento-tooltip">Zephyra Promo</span>
+                </a>
+                <a href="https://pasteleslaflaca.vercel.app/" target="_blank" class="bento-item">
+                    <img src="img/pasteleslaflaca.png" alt="Pasteles La Flaca">
+                    <span class="bento-tooltip">Pasteles La Flaca</span>
+                </a>
             </div>
         </div>
     </section>
@@ -1322,50 +1362,6 @@
         }, { threshold: 0.6 }); 
 
         serviceRows.forEach(row => serviceObserver.observe(row));
-
-        /* ========================================= */
-        /* CARGA DINÁMICA DEL PORTAFOLIO (SHEETS)    */
-        /* ========================================= */
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQyj-9VTVcBoK_vDRZi1jwzXi-WABzZ1hVuxp0WAE_Gj7TVknm6NOwiEQOHQ2XS-qA/exec'; 
-        const bentoContainer = document.getElementById('bento-container');
-
-        async function cargarPortafolio() {
-            try {
-                bentoContainer.innerHTML = '<div style="color: var(--accent-cyan); font-size: 0.8rem;">[ FETCHING_DATA... ]</div>';
-                
-                const response = await fetch(SCRIPT_URL);
-                const proyectos = await response.json();
-                
-                if (proyectos.error) {
-                    console.error("Error del servidor:", proyectos.error);
-                    bentoContainer.innerHTML = '<div style="color: red;">[ ERROR_LOADING_DATABASE ]</div>';
-                    return;
-                }
-
-                bentoContainer.innerHTML = '';
-                const proyectosDuplicados = [...proyectos, ...proyectos];
-
-                proyectosDuplicados.forEach(proyecto => {
-                    const a = document.createElement('a');
-                    a.href = proyecto.enlace;
-                    a.target = "_blank";
-                    a.className = "bento-item";
-                    
-                    a.innerHTML = `
-                        <img src="${proyecto.imagen}" alt="${proyecto.titulo}">
-                        <span class="bento-tooltip">${proyecto.titulo}</span>
-                    `;
-                    
-                    bentoContainer.appendChild(a);
-                });
-
-            } catch (error) {
-                console.error("Fallo la conexión:", error);
-                bentoContainer.innerHTML = `<div style="color: red; font-size: 0.8rem;">[ ERROR: ${error.message} ]</div>`;
-            }
-        }
-
-        cargarPortafolio();
 
         /* ========================================= */
         /* LÓGICA DEL MODAL DE CONTACTO              */
