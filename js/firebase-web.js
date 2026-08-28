@@ -115,5 +115,5 @@ if (form) {
 
 document.addEventListener("DOMContentLoaded", () => {
     // Reemplaza el cargarPortafolio() viejo si se ejecutó
-    setTimeout(cargarPortafolioFirebase, 2000); 
+    // setTimeout(cargarPortafolioFirebase, 2000); 
 });
