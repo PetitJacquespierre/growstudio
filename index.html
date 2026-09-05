@@ -931,22 +931,35 @@
                 </div>
             </div>
             
-            <div class="saas-visual">
-                <div class="saas-card">
-                    <div class="saas-card-header">MODELO DE INVERSIÓN</div>
-                    <p style="color: #888; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5; text-align: center;">Tu aliado tecnológico a largo plazo. Un modelo accesible pensado para escalar tu negocio gastronómico.</p>
-                    
-                    <div class="saas-pricing">
-                        <span>Setup Inicial</span>
-                        <strong style="color: #fff; font-size: 1rem; text-shadow: none;">(Desarrollo a medida)</strong>
+            <div class="saas-visual" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                <div class="saas-card" style="border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); flex: 1; min-width: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div class="saas-card-header" style="color: var(--accent-cyan); font-size: 1.1rem;">PRUEBA 7 DÍAS GRATIS</div>
+                        <p style="color: #888; font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; text-align: center;">Publica tus primeros 10 platos y recibe pedidos sin comisiones. Rompemos la barrera del riesgo.</p>
                     </div>
-                    
-                    <div style="text-align: center; color: var(--accent-cyan); font-size: 1.5rem; margin: 10px 0;">+</div>
-                    
-                    <div class="saas-pricing" style="margin-bottom: 0; border-color: var(--accent-orange); background: rgba(255, 85, 0, 0.05);">
-                        <span style="color: var(--accent-orange);">Suscripción Mensual</span>
-                        <strong style="color: var(--text-main); font-size: 0.9rem; text-shadow: none;">(Mantenimiento y Hosting)</strong>
-                        <div style="margin-top: 10px; font-size: 0.8rem; color: var(--accent-cyan); font-weight: bold; text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);">TÚ ERES EL DUEÑO DE TUS VENTAS</div>
+                    <div style="text-align: center;">
+                        <a href="#contacto" class="saas-action" style="margin-top: 0; padding: 10px 15px; font-size: 0.8rem; display: inline-block;" onclick="document.querySelector('.modal-overlay').classList.add('active'); return false;">&gt; COMENZAR GRATIS</a>
+                    </div>
+                </div>
+
+                <div class="saas-card" style="margin-top: 0; flex: 1; min-width: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div class="saas-card-header" style="font-size: 1.1rem;">PLAN MENSUAL</div>
+                        <div style="text-align: center; font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">$15 <span style="font-size: 0.9rem; color: #888;">/ mes</span></div>
+                        <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; text-align: center;">Catálogo digital, QR, pedidos a WhatsApp, panel y 0% de comisiones.</p>
+                    </div>
+                </div>
+
+                <div class="saas-card" style="margin-top: 0; border-color: var(--accent-orange); background: rgba(255, 85, 0, 0.05); position: relative; flex: 1; min-width: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: var(--accent-orange); color: #000; font-size: 0.65rem; font-weight: bold; padding: 3px 15px; border-radius: 0 0 8px 8px; letter-spacing: 1px;">RECOMENDADO</div>
+                    <div style="padding-top: 15px;">
+                        <div class="saas-card-header" style="color: var(--accent-orange); font-size: 1.1rem;">PLAN ANUAL "PREMIUM"</div>
+                        <div style="text-align: center; font-size: 1.8rem; font-weight: bold; margin-bottom: 10px;">$50 <span style="font-size: 0.9rem; color: #888;">/ año</span></div>
+                        <p style="color: #888; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.5; text-align: center;">Todo lo del plan mensual a precio de descuento.</p>
+                    </div>
+                    <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; text-align: center;">
+                        <span style="color: var(--accent-cyan); font-weight: bold; font-size: 0.75rem; white-space: nowrap;">[ BONUS EXCLUSIVO ]</span>
+                        <p style="font-size: 0.8rem; margin-top: 5px; color: #ccc;">INCLUYE 3 ETIQUETAS NFC<br>(MESAS INTELIGENTES)</p>
                     </div>
                 </div>
             </div>
