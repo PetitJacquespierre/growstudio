@@ -122,6 +122,9 @@ function mostrarDashboard() {
     if (estado === "SUSPENDIDO") {
         badge.innerText = "SUSPENDIDO";
         badge.className = "badge badge-suspended";
+    } else if (estado === "MOROSO") {
+        badge.innerText = "MOROSO";
+        badge.className = "badge badge-suspended"; // Usamos el mismo rojo
     } else {
         badge.innerText = "ACTIVO";
         badge.className = "badge badge-active";
