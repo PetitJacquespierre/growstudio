@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Configuración de Firebase (Idéntica al Admin)
 const firebaseConfig = {
@@ -48,11 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
 // =========================================
 window.login = async function() {
     const cedulaInput = document.getElementById("cedula-input");
-    const cedula = cedulaInput.value.trim().toLowerCase(); // Usamos el ID en minúsculas por si acaso
+    const rawVal = cedulaInput.value.trim();
     const errorMsg = document.getElementById("login-error");
     const btn = document.getElementById("btn-login");
 
-    if (!cedula) {
+    if (!rawVal) {
         errorMsg.innerText = "Por favor, ingresa tu Cédula o ID del proyecto.";
         return;
     }
@@ -63,12 +63,53 @@ window.login = async function() {
     btn.disabled = true;
 
     try {
-        const docRef = doc(db, "clientes", cedula);
-        const docSnap = await getDoc(docRef);
+        let foundDoc = null;
 
-        if (docSnap.exists()) {
-            currentClientId = docSnap.id;
-            currentClient = docSnap.data();
+        // Búsqueda estricta basada únicamente en lo configurado en Cobranza SaaS (cedula o usuario)
+        const cleanDigits = rawVal.replace(/\D/g, ''); // solo dígitos si es cédula: ej. 14074299
+        const variations = new Set([
+            rawVal,
+            rawVal.toLowerCase(),
+            rawVal.toUpperCase()
+        ]);
+
+        // Si es numérico (cédula), permitimos flexibilidad en mayúsculas/minúsculas y guiones
+        if (cleanDigits && cleanDigits.length >= 6) {
+            variations.add(cleanDigits);
+            variations.add(`V-${cleanDigits}`);
+            variations.add(`V${cleanDigits}`);
+            variations.add(`v-${cleanDigits}`);
+            variations.add(`v${cleanDigits}`);
+            variations.add(`J-${cleanDigits}`);
+            variations.add(`J${cleanDigits}`);
+            variations.add(`E-${cleanDigits}`);
+        }
+
+        // 1. Buscar en campo 'cedula' configurado por el admin
+        for (const val of variations) {
+            const q = query(collection(db, "clientes"), where("cedula", "==", val));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                foundDoc = snap.docs[0];
+                break;
+            }
+        }
+
+        // 2. Buscar en campo 'usuario' configurado por el admin si no coincidió con cédula
+        if (!foundDoc) {
+            for (const val of variations) {
+                const q = query(collection(db, "clientes"), where("usuario", "==", val));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    foundDoc = snap.docs[0];
+                    break;
+                }
+            }
+        }
+
+        if (foundDoc && foundDoc.exists()) {
+            currentClientId = foundDoc.id;
+            currentClient = foundDoc.data();
             mostrarDashboard();
         } else {
             errorMsg.innerText = "Cédula o ID no encontrado en nuestra base de datos.";
@@ -161,7 +202,8 @@ window.reportarPago = async function() {
         
         // Guardar el pago en la colección "pagos" para que el admin lo vea
         await addDoc(collection(db, "pagos"), {
-            cedula: currentClientId, // Guardamos el ID del cliente
+            cedula: currentClient.cedula || currentClientId,
+            clienteId: currentClientId,
             nombre: currentClient.businessName || currentClient.nombre || "Cliente",
             monto: monto,
             metodo: metodo,
