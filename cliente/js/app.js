@@ -287,7 +287,8 @@ window.reportarPago = async function() {
             referencia: ref,
             estado: "POR REVISAR",
             fechaLocal: fechaCorta,
-            fechaRegistro: new Date().toISOString()
+            fechaRegistro: new Date().toISOString(),
+            fecha: new Date().toISOString()
         });
 
         msgBox.className = "msg-box success-msg";
