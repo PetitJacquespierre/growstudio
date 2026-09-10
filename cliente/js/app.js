@@ -17,6 +17,68 @@ const db = getFirestore(app);
 let currentClient = null;
 let currentClientId = null; // Guardamos también el ID del documento en firebase
 
+// =========================================
+// TASA BCV EN VIVO
+// =========================================
+const URL_API_DIVISAS_BCV = "https://script.google.com/macros/s/AKfycbwsoD8ahtAQUqfY0TQWf3-dDs29HL8kEJa2t-mjDR3PAo3exTTmtSwXqYuNB2ob5dFpgw/exec";
+let bcvRate = parseFloat(localStorage.getItem("bcvRateCache")) || 820.10;
+
+async function fetchBCVRate() {
+    try {
+        const response = await fetch(URL_API_DIVISAS_BCV);
+        const data = await response.json();
+        if (data && data.usd) {
+            const nueva = parseFloat(data.usd);
+            if (nueva > 10) {
+                bcvRate = nueva;
+                localStorage.setItem("bcvRateCache", bcvRate);
+                actualizarCalculosBCV();
+            }
+        }
+    } catch (e) {
+        console.warn("Usando tasa BCV cacheada:", bcvRate);
+    }
+}
+
+function actualizarCalculosBCV() {
+    if (!currentClient) return;
+    const deudaUsd = parseFloat(currentClient.deuda || 0);
+    const deudaBs = (deudaUsd * bcvRate).toFixed(2);
+    
+    const deudaBsEl = document.getElementById("dash-deuda-bs");
+    if (deudaBsEl) deudaBsEl.innerText = Number(deudaBs).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
+    const bcvRateEl = document.getElementById("dash-bcv-rate");
+    if (bcvRateEl) bcvRateEl.innerText = bcvRate.toFixed(2);
+
+    window.onMetodoPagoChange();
+}
+
+window.onMetodoPagoChange = function() {
+    const metodoSelect = document.getElementById("pay-metodo");
+    if (!metodoSelect || !currentClient) return;
+    const metodo = metodoSelect.value;
+    const labelMonto = document.getElementById("label-pay-monto");
+    const inputMonto = document.getElementById("pay-monto");
+    const hintMonto = document.getElementById("pay-monto-hint");
+    const deudaUsd = parseFloat(currentClient.deuda || 0);
+
+    if (metodo === "Pago Móvil") {
+        if (labelMonto) labelMonto.innerText = "Monto a Pagar (Bs)";
+        const montoBs = (deudaUsd * bcvRate).toFixed(2);
+        if (inputMonto) inputMonto.value = montoBs;
+        if (hintMonto) {
+            hintMonto.innerText = `≈ $${deudaUsd.toFixed(2)} USD a tasa BCV (${bcvRate.toFixed(2)} Bs/$)`;
+        }
+    } else {
+        if (labelMonto) labelMonto.innerText = "Monto a Pagar ($ USD)";
+        if (inputMonto) inputMonto.value = deudaUsd.toFixed(2);
+        if (hintMonto) {
+            hintMonto.innerText = "Pago en divisas / dólares";
+        }
+    }
+};
+
 // Inicialización de eventos al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
     const cedulaInput = document.getElementById("cedula-input");
@@ -27,6 +89,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.login();
             }
         });
+    }
+
+    const payMetodo = document.getElementById("pay-metodo");
+    if (payMetodo) {
+        payMetodo.addEventListener("change", window.onMetodoPagoChange);
     }
 
     const payInputs = ["pay-monto", "pay-ref"];
@@ -170,6 +237,10 @@ function mostrarDashboard() {
         badge.innerText = "ACTIVO";
         badge.className = "badge badge-active";
     }
+
+    // Actualizar montos en Bolívares y tasa BCV
+    fetchBCVRate();
+    actualizarCalculosBCV();
 }
 
 // =========================================
@@ -199,13 +270,19 @@ window.reportarPago = async function() {
 
     try {
         const fechaCorta = new Date().toLocaleDateString('es-ES'); // ej: "15/10/2023"
+        const esBs = (metodo === "Pago Móvil");
+        // Si pagó en Bolívares (Pago Móvil), convertimos a USD equivalente para descontar de la deuda
+        const montoUsd = esBs ? parseFloat((monto / bcvRate).toFixed(2)) : monto;
         
         // Guardar el pago en la colección "pagos" para que el admin lo vea
         await addDoc(collection(db, "pagos"), {
             cedula: currentClient.cedula || currentClientId,
             clienteId: currentClientId,
             nombre: currentClient.businessName || currentClient.nombre || "Cliente",
-            monto: monto,
+            monto: montoUsd,
+            montoReportado: monto,
+            moneda: esBs ? "Bs" : "USD",
+            tasaBcv: bcvRate,
             metodo: metodo,
             referencia: ref,
             estado: "POR REVISAR",

@@ -63,7 +63,11 @@
                 <!-- Tarjeta Deuda -->
                 <div class="status-card">
                     <p class="status-label">Deuda Actual</p>
-                    <h2 class="deuda-monto">$<span id="dash-deuda">0.00</span></h2>
+                    <h2 class="deuda-monto">$<span id="dash-deuda">0.00</span> <span style="font-size: 1rem; color: #a1a1aa;">USD</span></h2>
+                    <p style="margin: 6px 0 0 0; font-size: 0.95rem; color: #a1a1aa;">
+                        ≈ <strong id="dash-deuda-bs" style="color: #4ade80;">0.00</strong> Bs
+                        <span style="font-size: 0.75rem; color: #71717a; display: block; margin-top: 2px;">Tasa Oficial BCV: <span id="dash-bcv-rate">0.00</span> Bs/$</span>
+                    </p>
                 </div>
 
                 <!-- Tarjeta Estado -->
@@ -81,17 +85,18 @@
 
                 <div class="form-row">
                     <div class="form-group w-50">
-                        <label>Monto Pagado ($ o Bs)</label>
-                        <input type="number" id="pay-monto" placeholder="Ej. 20" step="0.01">
+                        <label id="label-pay-monto">Monto a Pagar (Bs)</label>
+                        <input type="number" id="pay-monto" placeholder="0.00" step="0.01">
+                        <small id="pay-monto-hint" style="color: #a1a1aa; font-size: 0.75rem; margin-top: 4px; display: block;"></small>
                     </div>
                     <div class="form-group w-50">
                         <label>Método de Pago</label>
                         <select id="pay-metodo">
                             <option value="Pago Móvil">Pago Móvil</option>
-                            <option value="Binance">Binance (USDT)</option>
+                            <option value="Divisa">Divisa</option>
                             <option value="Zelle">Zelle</option>
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Otros">Otros</option>
+                            <option value="Binance">Binance (USDT)</option>
+                            <option value="Otro">Otro</option>
                         </select>
                     </div>
                 </div>
