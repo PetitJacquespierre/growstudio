@@ -63,20 +63,74 @@ window.onMetodoPagoChange = function() {
     const hintMonto = document.getElementById("pay-monto-hint");
     const deudaUsd = parseFloat(currentClient.deuda || 0);
 
+    // Tarjetas de datos de pago
+    const cardMovil = document.getElementById("datos-pago-movil");
+    const cardDivisa = document.getElementById("datos-pago-divisa");
+    const tituloDiv = document.getElementById("datos-divisa-titulo");
+    const iconoDiv = document.getElementById("datos-divisa-icono");
+    const emailSection = document.getElementById("datos-divisa-email-section");
+    const wpSection = document.getElementById("datos-divisa-wp-section");
+    const dpMontoDivisa = document.getElementById("dp-monto-divisa");
+
+    const metodosMail = ["Zelle", "Zinli", "Binance"];
+
     if (metodo === "Pago Móvil") {
         if (labelMonto) labelMonto.innerText = "Monto a Pagar (Bs)";
         const montoBs = (deudaUsd * bcvRate).toFixed(2);
         if (inputMonto) inputMonto.value = montoBs;
-        if (hintMonto) {
-            hintMonto.innerText = `≈ $${deudaUsd.toFixed(2)} USD a tasa BCV (${bcvRate.toFixed(2)} Bs/$)`;
-        }
+        if (hintMonto) hintMonto.innerText = `≈ $${deudaUsd.toFixed(2)} USD a tasa BCV (${bcvRate.toFixed(2)} Bs/$)`;
+        if (cardMovil) cardMovil.style.display = "block";
+        if (cardDivisa) cardDivisa.style.display = "none";
     } else {
         if (labelMonto) labelMonto.innerText = "Monto a Pagar ($ USD)";
         if (inputMonto) inputMonto.value = deudaUsd.toFixed(2);
-        if (hintMonto) {
-            hintMonto.innerText = "Pago en divisas / dólares";
+        if (hintMonto) hintMonto.innerText = "Pago en divisas / dólares";
+        if (cardMovil) cardMovil.style.display = "none";
+        if (cardDivisa) cardDivisa.style.display = "block";
+
+        // Título e ícono dinámico
+        const configs = {
+            "Zinli":   { titulo: "Pago por Zinli",          icono: "fa-solid fa-mobile-screen-button" },
+            "Binance": { titulo: "Pago por Binance (USDT)", icono: "fa-solid fa-coins" },
+            "Divisa":  { titulo: "Pago en Divisas / Efectivo", icono: "fa-solid fa-money-bill" },
+            "Otro":    { titulo: "Otro Método de Pago",    icono: "fa-solid fa-ellipsis" },
+        };
+        const cfg = configs[metodo] || configs["Divisa"];
+        if (tituloDiv) tituloDiv.innerText = cfg.titulo;
+        if (iconoDiv) iconoDiv.className = cfg.icono;
+
+        // Mostrar email o WhatsApp según método
+        if (metodosMail.includes(metodo)) {
+            if (emailSection) emailSection.style.display = "block";
+            if (wpSection) wpSection.style.display = "none";
+            if (dpMontoDivisa) dpMontoDivisa.innerText = `$${deudaUsd.toFixed(2)} USD`;
+        } else {
+            if (emailSection) emailSection.style.display = "none";
+            if (wpSection) wpSection.style.display = "block";
         }
     }
+};
+
+// Copiar dato al portapapeles
+window.copiarDato = function(elementId, btn) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    navigator.clipboard.writeText(el.innerText).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+        }, 2000);
+    }).catch(() => {
+        // Fallback si clipboard no está disponible
+        const range = document.createRange();
+        range.selectNode(el);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+    });
 };
 
 // Inicialización de eventos al cargar la página

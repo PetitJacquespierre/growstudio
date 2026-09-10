@@ -80,6 +80,68 @@
             <hr class="divider">
 
             <div class="report-section">
+
+                <!-- ══ DATOS PARA REALIZAR EL PAGO ══ -->
+                <h4><i class="fa-solid fa-money-bill-transfer"></i> Datos para Realizar el Pago</h4>
+                <p class="report-desc">Realiza tu pago a la siguiente cuenta y luego regístralo abajo.</p>
+
+                <div id="datos-pago-container">
+
+                    <!-- PAGO MÓVIL -->
+                    <div id="datos-pago-movil" class="datos-pago-card">
+                        <div class="datos-pago-header">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <span>Pago Móvil – Mercantil</span>
+                        </div>
+                        <div class="datos-pago-row">
+                            <span class="datos-label">Cédula</span>
+                            <span class="datos-valor" id="dp-cedula">V-14074229</span>
+                            <button class="btn-copy" onclick="copiarDato('dp-cedula', this)" title="Copiar"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div class="datos-pago-row">
+                            <span class="datos-label">Teléfono</span>
+                            <span class="datos-valor" id="dp-telefono">04127732710</span>
+                            <button class="btn-copy" onclick="copiarDato('dp-telefono', this)" title="Copiar"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div class="datos-pago-row">
+                            <span class="datos-label">Banco</span>
+                            <span class="datos-valor">Mercantil (0105)</span>
+                        </div>
+                    </div>
+
+                    <!-- DIVISA / ZELLE / ZINLI / BINANCE / OTRO -->
+                    <div id="datos-pago-divisa" class="datos-pago-card" style="display:none;">
+                        <div class="datos-pago-header">
+                            <i id="datos-divisa-icono" class="fa-solid fa-dollar-sign"></i>
+                            <span id="datos-divisa-titulo">Pago en Divisas</span>
+                        </div>
+                        <!-- Email (Zelle / Zinli / Binance) -->
+                        <div id="datos-divisa-email-section">
+                            <div class="datos-pago-row">
+                                <span class="datos-label">Email</span>
+                                <span class="datos-valor" id="dp-email">petitjacquespierre@gmail.com</span>
+                                <button class="btn-copy" onclick="copiarDato('dp-email', this)" title="Copiar"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                            <div class="datos-pago-row">
+                                <span class="datos-label">Monto</span>
+                                <span class="datos-valor" id="dp-monto-divisa">$0.00 USD</span>
+                            </div>
+                        </div>
+                        <!-- WhatsApp (Divisa / Efectivo / Otro) -->
+                        <div id="datos-divisa-wp-section" style="display:none;">
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin: 8px 0 0 0;">Contáctanos por WhatsApp para coordinar el pago.</p>
+                            <a href="https://wa.me/584127732710?text=Hola%2C+quiero+reportar+un+pago+por+mi+plan+de+Grow+Studio." 
+                               target="_blank" style="display:inline-flex; align-items:center; gap:8px; margin-top:12px; background:#25d366; color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-weight:600; font-size:0.9rem;">
+                                <i class="fa-brands fa-whatsapp"></i> Contactar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="divider" style="margin: 20px 0;">
+
+                <!-- ══ FORMULARIO DE REPORTE ══ -->
                 <h4><i class="fa-solid fa-file-invoice-dollar"></i> Reportar Pago</h4>
                 <p class="report-desc">Registra aquí tu pago para que sea validado y descontado de tu deuda.</p>
 
@@ -93,9 +155,9 @@
                         <label>Método de Pago</label>
                         <select id="pay-metodo">
                             <option value="Pago Móvil">Pago Móvil</option>
-                            <option value="Divisa">Divisa</option>
-                            <option value="Zelle">Zelle</option>
+                            <option value="Zinli">Zinli</option>
                             <option value="Binance">Binance (USDT)</option>
+                            <option value="Divisa">Divisa / Efectivo</option>
                             <option value="Otro">Otro</option>
                         </select>
                     </div>
