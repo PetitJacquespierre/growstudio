@@ -20,12 +20,12 @@ let currentClientId = null; // Guardamos también el ID del documento en firebas
 // =========================================
 // TASA BCV EN VIVO
 // =========================================
-const URL_API_DIVISAS_BCV = "https://script.google.com/macros/s/AKfycbwsoD8ahtAQUqfY0TQWf3-dDs29HL8kEJa2t-mjDR3PAo3exTTmtSwXqYuNB2ob5dFpgw/exec";
-let bcvRate = parseFloat(localStorage.getItem("bcvRateCache")) || 820.10;
+const URL_API_DIVISAS_BCV = "https://script.google.com/macros/s/AKfycbyazhyYfK-vURGv34XF-oTW1_34rTVRs2WM7-aNlswf-mIGhIwgaLgwfGx1xZxfm50/exec";
+let bcvRate = parseFloat(localStorage.getItem("bcvRateCache")) || 853.50;
 
 async function fetchBCVRate() {
     try {
-        const response = await fetch(URL_API_DIVISAS_BCV);
+        const response = await fetch(URL_API_DIVISAS_BCV + "?t=" + Date.now());
         const data = await response.json();
         if (data && data.usd) {
             const nueva = parseFloat(data.usd);
