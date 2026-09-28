@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     projectId: "grow-studio-menus",
@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 1. CARGA DEL PORTAFOLIO DESDE FIREBASE
+// 1. CARGA DEL PORTAFOLIO DESDE FIREBASE (Filtrado estricto solo de clientes activos)
 async function cargarPortafolioFirebase() {
     const bentoContainer = document.getElementById('bento-container');
     if (!bentoContainer) return;
@@ -21,13 +21,14 @@ async function cargarPortafolioFirebase() {
     try {
         bentoContainer.innerHTML = '<div style="color: var(--accent-cyan); font-size: 0.8rem;">[ FETCHING_FIREBASE... ]</div>';
         
-        const querySnapshot = await getDocs(collection(db, "clientes"));
+        const q = query(collection(db, "clientes"), where("estado", "==", "ACTIVO"));
+        const querySnapshot = await getDocs(q);
         bentoContainer.innerHTML = '';
         
         const proyectos = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            if (data.estado === "ACTIVO" && data.url) {
+            if (data.url) {
                 proyectos.push({
                     titulo: data.businessName || doc.id,
                     enlace: data.url,

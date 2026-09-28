@@ -7,7 +7,17 @@ export default async function handler(req, res) {
   }
 
   // Capturamos los datos que envió el HTML
-  const { nombre, email, telefono, mensaje } = req.body;
+  const { nombre, email, telefono, mensaje, _gotcha } = req.body || {};
+
+  // Protección Anti-Spam / Anti-Bot silenciosa: si el honeypot viene lleno, descartar silenciosamente
+  if (_gotcha) {
+    return res.status(200).json({ success: true, message: 'Message filtered' });
+  }
+
+  // Validación básica de campos requeridos
+  if (!nombre || !email || !mensaje) {
+    return res.status(400).json({ error: 'Faltan campos requeridos' });
+  }
 
   try {
     // Usamos la API de Resend para enviarte el correo
