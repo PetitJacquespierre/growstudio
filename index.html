@@ -59,7 +59,14 @@
             position: fixed; inset: 0; width: 100vw; height: 100vh;
             background-color: var(--bg-color); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
-            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+            transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+            cursor: pointer;
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
         }
 
         #splash-webgl { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.7; }
@@ -1169,9 +1176,9 @@
 
     <footer>
         <div class="meta-data">[ EXECUTE: CONTACT.EXE ]</div>
-        <div class="footer-cta">HABLEMOS DE<br><span>TU PROYECTO</span></div>
+        <div class="footer-cta" id="footer-cta-btn" style="cursor: pointer;" title="Abrir Formulario de Contacto">HABLEMOS DE<br><span>TU PROYECTO</span></div>
         <div class="footer-bottom">
-            <div>&copy; 2026 GROW STUDIO // PUNTO FIJO, VENEZUELA</div>
+            <div>&copy; <span id="current-year">2026</span> GROW STUDIO // PUNTO FIJO, VENEZUELA</div>
             <div>[ CODE &amp; CREATIVITY ]</div>
         </div>
     </footer>
@@ -1185,13 +1192,26 @@
         /* ========================================= */
         let splashActive = true;
         const splashScreen = document.getElementById('splash-screen');
-        
-        setTimeout(() => {
-            splashScreen.style.opacity = '0';
-            splashScreen.style.visibility = 'hidden';
-            document.body.style.overflowY = 'auto'; 
+
+        function dismissSplashScreen() {
+            if (!splashScreen || !splashActive) return;
             splashActive = false;
-        }, 4000);
+            splashScreen.classList.add('fade-out');
+            document.body.style.overflowY = 'auto';
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 800);
+        }
+        
+        // Cierre automático fluido respetando el estándar Grow Studio (máx 1.5s)
+        const splashTimer = setTimeout(dismissSplashScreen, 1500);
+
+        // Permitir saltar al hacer tap o scroll
+        splashScreen.addEventListener('click', () => {
+            clearTimeout(splashTimer);
+            dismissSplashScreen();
+        });
+        window.addEventListener('keydown', dismissSplashScreen, { once: true });
 
         const splashCanvas = document.getElementById('splash-webgl');
         const splashScene = new THREE.Scene();
@@ -1379,10 +1399,24 @@
         const modalOverlay = document.getElementById('contact-modal-overlay');
         const openBtn = document.getElementById('open-modal-btn');
         const closeBtn = document.getElementById('close-modal-btn');
+        const footerCtaBtn = document.getElementById('footer-cta-btn');
 
-        openBtn.addEventListener('click', () => {
-            modalOverlay.classList.add('active');
-        });
+        if (openBtn) {
+            openBtn.addEventListener('click', () => {
+                modalOverlay.classList.add('active');
+            });
+        }
+
+        if (footerCtaBtn) {
+            footerCtaBtn.addEventListener('click', () => {
+                modalOverlay.classList.add('active');
+            });
+        }
+
+        const yearSpan = document.getElementById('current-year');
+        if (yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
 
         closeBtn.addEventListener('click', () => {
             modalOverlay.classList.remove('active');
@@ -1501,6 +1535,7 @@
         if ('scrollRestoration' in history) {
             history.scrollRestoration = 'manual';
         }
+    </script>
         
     <!-- LIBRERÍA DE CONFETI PARA EL SELLO GROW STUDIO -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
