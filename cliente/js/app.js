@@ -51,6 +51,9 @@ function actualizarCalculosBCV() {
     const bcvRateEl = document.getElementById("dash-bcv-rate");
     if (bcvRateEl) bcvRateEl.innerText = bcvRate.toFixed(2);
 
+    const topBcvEl = document.getElementById("dash-top-bcv-rate");
+    if (topBcvEl) topBcvEl.innerText = bcvRate.toFixed(2);
+
     window.onMetodoPagoChange();
 }
 
@@ -206,7 +209,39 @@ window.login = async function() {
             variations.add(`E-${cleanDigits}`);
         }
 
-        // 1. Buscar en campo 'cedula' configurado por el admin
+        // 1. Detección especial de Producción: Sandía Production
+        const isSandiaQuery = variations.has("sandia") || 
+                              variations.has("sandiaproduction") || 
+                              variations.has("sandia_production") || 
+                              cleanDigits === "16314604";
+
+        if (isSandiaQuery) {
+            try {
+                const sandiaDocRef = doc(db, "sandia_config", "general");
+                const sandiaSnap = await getDoc(sandiaDocRef);
+                const sData = sandiaSnap.exists() ? sandiaSnap.data() : {};
+
+                currentClientId = "sandia_production";
+                currentClient = {
+                    businessName: "Sandía Production",
+                    nombre: "Sandía Production",
+                    titular: "Dehivi González",
+                    cedula: "V-16.314.604",
+                    proyecto: "Plataforma Web, Calendario Runner & Retos Deportivos",
+                    plan: sData.plan || "MENSUAL",
+                    deuda: parseFloat(sData.deuda !== undefined ? sData.deuda : (sData.mensualidad || 20)),
+                    fechaVencimiento: sData.vencimiento || "",
+                    estado: sData.estadoWeb === "ONLINE" || !sData.estadoWeb ? "ACTIVO" : sData.estadoWeb,
+                    tipoServicio: "PRODUCCION_WEB"
+                };
+                mostrarDashboard();
+                return;
+            } catch (errSandia) {
+                console.warn("Error consultando sandia_config:", errSandia);
+            }
+        }
+
+        // 2. Buscar en campo 'cedula' configurado por el admin en la colección 'clientes' (SaaS)
         for (const val of variations) {
             const q = query(collection(db, "clientes"), where("cedula", "==", val));
             const snap = await getDocs(q);
@@ -216,7 +251,7 @@ window.login = async function() {
             }
         }
 
-        // 2. Buscar en campo 'usuario' configurado por el admin si no coincidió con cédula
+        // 3. Buscar en campo 'usuario' configurado por el admin si no coincidió con cédula
         if (!foundDoc) {
             for (const val of variations) {
                 const q = query(collection(db, "clientes"), where("usuario", "==", val));
@@ -225,6 +260,19 @@ window.login = async function() {
                     foundDoc = snap.docs[0];
                     break;
                 }
+            }
+        }
+
+        // 4. Buscar por ID del documento directo en 'clientes' (ej: pasteles_la_flaca, foodpoint)
+        if (!foundDoc) {
+            for (const val of variations) {
+                try {
+                    const directSnap = await getDoc(doc(db, "clientes", val));
+                    if (directSnap.exists()) {
+                        foundDoc = directSnap;
+                        break;
+                    }
+                } catch(e) {}
             }
         }
 
@@ -270,11 +318,16 @@ function mostrarDashboard() {
     document.getElementById("dashboard-screen").classList.remove("hidden");
     document.getElementById("dashboard-screen").classList.add("active");
 
-    document.getElementById("dash-cliente-nombre").innerText = currentClient.businessName || currentClient.nombre || "Cliente";
+    const clientName = currentClient.businessName || currentClient.nombre || "Cliente";
+    document.getElementById("dash-cliente-nombre").innerText = clientName;
     
-    // Proyecto puede ser la URL o el ID del documento
-    const plan = currentClient.plan || "PRUEBA";
-    document.getElementById("dash-proyecto").innerText = `Plan: ${plan}`;
+    // Proyecto y detalles del servicio
+    const plan = currentClient.plan || "MENSUAL";
+    if (currentClient.proyecto) {
+        document.getElementById("dash-proyecto").innerText = `Proyecto: ${currentClient.proyecto} (${plan})`;
+    } else {
+        document.getElementById("dash-proyecto").innerText = `Plan: ${plan}`;
+    }
     
     const deuda = parseFloat(currentClient.deuda || 0).toFixed(2);
     document.getElementById("dash-deuda").innerText = deuda;
