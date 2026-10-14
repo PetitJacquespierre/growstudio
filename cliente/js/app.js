@@ -415,11 +415,11 @@ function mostrarDashboard() {
         desgloseDesc.innerText = "Resumen del plan acordado para elaboración web y mantenimiento (Corte los días 10 con 5 días de holgura):";
 
         let htmlItems = `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
                 <span style="color: #e4e4e7;">🌐 Saldo restante elaboración web ($200 - $100 abonados):</span>
                 <strong style="color: #00d2ff;">$${saldoWeb.toFixed(2)} USD</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
                 <span style="color: #e4e4e7;">⚡ Mantenimiento mensual (Octubre):</span>
                 <span style="color: #10b981; font-weight: 700;">Al día ($0.00)</span>
             </div>
@@ -427,7 +427,7 @@ function mostrarDashboard() {
 
         if (pasoCorte) {
             htmlItems += `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; color: ${pasoGracia ? '#ef4444' : '#f59e0b'};">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; color: ${pasoGracia ? '#ef4444' : '#f59e0b'};">
                     <span>⚠️ Mensualidad ciclo (Corte día 10${pasoGracia ? ' - Fuera de gracia' : ' - En holgura hasta el 15'}):</span>
                     <strong>+$${mensualidad.toFixed(2)} USD</strong>
                 </div>
@@ -454,7 +454,7 @@ function mostrarDashboard() {
             }
 
             quickButtons.innerHTML = chips.map((c, idx) => `
-                <button type="button" class="quick-amount-chip" onclick="window.seleccionarCuota(${c.usd}, this)" style="background: ${idx === 0 ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${idx === 0 ? '#00d2ff' : 'rgba(255,255,255,0.15)'}; color: ${idx === 0 ? '#00d2ff' : '#fff'}; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                <button type="button" class="quick-amount-chip" onclick="window.seleccionarCuota(${c.usd}, this)" style="background: ${idx === 0 ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${idx === 0 ? '#00d2ff' : 'rgba(255,255,255,0.15)'}; color: ${idx === 0 ? '#00d2ff' : '#fff'}; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                     ${c.label}
                 </button>
             `).join('');

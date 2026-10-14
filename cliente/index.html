@@ -52,13 +52,13 @@
         <!-- PANTALLA DEL DASHBOARD (Oculta hasta loguearse) -->
         <div id="dashboard-screen" class="glass-card hidden">
             <!-- Barra Superior Tasa BCV en Vivo y Botón Salir -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-glass); flex-wrap: wrap; gap: 10px;">
-                <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.25); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;">
-                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite;"></span>
-                    <span style="color: #a1a1aa;">Tasa Oficial BCV:</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border-glass); flex-wrap: wrap; gap: 8px;">
+                <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.25); padding: 3px 10px; border-radius: 16px; font-size: 0.75rem;">
+                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; animation: pulse 2s infinite;"></span>
+                    <span style="color: #a1a1aa;">Tasa BCV:</span>
                     <strong style="color: #00d2ff;"><span id="dash-top-bcv-rate">0.00</span> Bs/$</strong>
                 </div>
-                <button class="btn-logout" onclick="logout()" style="margin: 0; padding: 6px 14px; font-size: 0.85rem;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Salir</button>
+                <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Salir</button>
             </div>
             
             <div class="header-info">
@@ -70,10 +70,10 @@
                 <!-- Tarjeta Deuda -->
                 <div class="status-card">
                     <p class="status-label">Balance Pendiente</p>
-                    <h2 class="deuda-monto">$<span id="dash-deuda">0.00</span> <span style="font-size: 1rem; color: #a1a1aa;">USD</span></h2>
-                    <p style="margin: 6px 0 0 0; font-size: 0.95rem; color: #a1a1aa;">
+                    <h2 class="deuda-monto">$<span id="dash-deuda">0.00</span> <span style="font-size: 0.78rem; color: #a1a1aa; font-weight: 600;">USD</span></h2>
+                    <p style="margin: 3px 0 0 0; font-size: 0.8rem; color: #a1a1aa;">
                         ≈ <strong id="dash-deuda-bs" style="color: #4ade80;">0.00</strong> Bs
-                        <span style="font-size: 0.75rem; color: #71717a; display: block; margin-top: 2px;">Tasa Oficial BCV: <span id="dash-bcv-rate">0.00</span> Bs/$</span>
+                        <span style="font-size: 0.68rem; color: #71717a; display: block; margin-top: 1px;">Tasa Oficial BCV: <span id="dash-bcv-rate">0.00</span> Bs/$</span>
                     </p>
                 </div>
 
@@ -81,20 +81,20 @@
                 <div class="status-card">
                     <p class="status-label">Estado del Servicio</p>
                     <div id="dash-estado-badge" class="badge badge-active">ACTIVO</div>
-                    <p id="dash-vencimiento-info" style="font-size: 0.8rem; color: #a1a1aa; margin: 8px 0 0 0;"></p>
+                    <p id="dash-vencimiento-info" style="font-size: 0.72rem; color: #a1a1aa; margin: 4px 0 0 0;"></p>
                 </div>
             </div>
 
             <!-- Desglose Explicativo del Saldo -->
-            <div id="dash-desglose-card" style="margin-top: 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 20px; font-size: 0.88rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+            <div id="dash-desglose-card" style="margin-top: 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 14px; font-size: 0.78rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-weight: 700; color: #fff; display: flex; align-items: center; gap: 5px; font-size: 0.82rem;">
                         <i class="fa-solid fa-circle-info" style="color: #00d2ff;"></i> Detalle del Saldo
                     </span>
-                    <span id="dash-desglose-tag" style="font-size: 0.75rem; background: rgba(0, 210, 255, 0.15); color: #00d2ff; padding: 2px 8px; border-radius: 6px; font-weight: 600;">En cuotas</span>
+                    <span id="dash-desglose-tag" style="font-size: 0.68rem; background: rgba(0, 210, 255, 0.15); color: #00d2ff; padding: 1px 6px; border-radius: 4px; font-weight: 600;">En cuotas</span>
                 </div>
-                <p id="dash-desglose-desc" style="color: #a1a1aa; margin: 0 0 10px 0; font-size: 0.82rem; line-height: 1.4;"></p>
-                <div id="dash-desglose-items" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                <p id="dash-desglose-desc" style="color: #a1a1aa; margin: 0 0 6px 0; font-size: 0.74rem; line-height: 1.35;"></p>
+                <div id="dash-desglose-items" style="display: flex; flex-direction: column; gap: 4px;"></div>
             </div>
 
             <hr class="divider">
