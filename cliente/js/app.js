@@ -231,8 +231,13 @@ window.login = async function() {
         }
 
         // 1. Detección especial de Producción: Sandía Production
-        const isSandiaQuery = variations.has("sandia") || 
+        const normalizedVal = rawVal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '');
+        const isSandiaQuery = normalizedVal.includes("sandia") || 
+                              variations.has("sandia") || 
+                              variations.has("sandía") || 
                               variations.has("sandiaproduction") || 
+                              variations.has("sandía production") || 
+                              variations.has("sandia production") || 
                               variations.has("sandia_production") || 
                               cleanDigits === "16314604";
 
@@ -253,7 +258,7 @@ window.login = async function() {
                     plan: sData.plan || "MENSUAL",
                     deuda: deudaRegistrada,
                     deudaWeb: sData.deudaWeb !== undefined ? parseFloat(sData.deudaWeb) : deudaRegistrada,
-                    fechaVencimiento: sData.vencimiento || "2026-11-13",
+                    fechaVencimiento: sData.vencimiento || "2026-11-10",
                     estado: sData.estadoWeb === "ONLINE" || !sData.estadoWeb ? "ACTIVO" : sData.estadoWeb,
                     tipoServicio: "PRODUCCION_WEB"
                 };
@@ -391,6 +396,7 @@ function mostrarDashboard() {
 
     selectedMontoUsd = null; // Reiniciar selección manual
 
+    if (currentClientId === "sandia_production") {
         // Fecha de corte oficial: día 10 (ej: 2026-11-10) con 5 días de holgura/gracia (hasta el día 15)
         const hoy = new Date();
         const baseVenc = fechaV ? new Date(fechaV + 'T00:00:00') : new Date('2026-11-10T00:00:00');
