@@ -391,11 +391,14 @@ function mostrarDashboard() {
 
     selectedMontoUsd = null; // Reiniciar selección manual
 
-    if (currentClientId === "sandia_production") {
-        // Verificar si la fecha actual ya superó el vencimiento (13 de Noviembre)
+        // Fecha de corte oficial: día 10 (ej: 2026-11-10) con 5 días de holgura/gracia (hasta el día 15)
         const hoy = new Date();
-        const baseVenc = fechaV ? new Date(fechaV + 'T00:00:00') : new Date('2026-11-13T00:00:00');
-        const vencioCiclo = hoy >= baseVenc;
+        const baseVenc = fechaV ? new Date(fechaV + 'T00:00:00') : new Date('2026-11-10T00:00:00');
+        const fechaGracia = new Date(baseVenc);
+        fechaGracia.setDate(fechaGracia.getDate() + 5); // 5 días de holgura (hasta el 15)
+
+        const pasoCorte = hoy >= baseVenc;
+        const pasoGracia = hoy > fechaGracia;
         const mensualidad = 20;
 
         let saldoWeb = parseFloat(currentClient.deudaWeb !== undefined ? currentClient.deudaWeb : currentClient.deuda);
@@ -403,23 +406,23 @@ function mostrarDashboard() {
 
         desgloseCard.style.display = "block";
         desgloseTag.innerText = "Acuerdo Flexible";
-        desgloseDesc.innerText = "Resumen del plan de pagos acordado para la elaboración de la plataforma web y mantenimiento mensual:";
+        desgloseDesc.innerText = "Resumen del plan acordado para elaboración web y mantenimiento (Corte los días 10 con 5 días de holgura):";
 
         let htmlItems = `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
-                <span style="color: #e4e4e7;">🌐 Saldo restante elaboración web (Total $200 - $100 abonados):</span>
+                <span style="color: #e4e4e7;">🌐 Saldo restante elaboración web ($200 - $100 abonados):</span>
                 <strong style="color: #00d2ff;">$${saldoWeb.toFixed(2)} USD</strong>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
-                <span style="color: #e4e4e7;">⚡ Mantenimiento mensual (Octubre - 1er mes cubierto):</span>
+                <span style="color: #e4e4e7;">⚡ Mantenimiento mensual (Octubre):</span>
                 <span style="color: #10b981; font-weight: 700;">Al día ($0.00)</span>
             </div>
         `;
 
-        if (vencioCiclo) {
+        if (pasoCorte) {
             htmlItems += `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; color: #f59e0b;">
-                    <span>⚠️ Mensualidad ciclo Noviembre (Corte ${fechaV}):</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; color: ${pasoGracia ? '#ef4444' : '#f59e0b'};">
+                    <span>⚠️ Mensualidad ciclo (Corte día 10${pasoGracia ? ' - Fuera de gracia' : ' - En holgura hasta el 15'}):</span>
                     <strong>+$${mensualidad.toFixed(2)} USD</strong>
                 </div>
             `;
@@ -439,7 +442,7 @@ function mostrarDashboard() {
                 chips.push({ label: `Abonar Saldo Web ($${saldoWeb})`, usd: saldoWeb });
             }
 
-            if (vencioCiclo) {
+            if (pasoCorte) {
                 chips.push({ label: `Cuota Quincenal + Mant. ($${50 + mensualidad})`, usd: 50 + mensualidad });
                 chips.push({ label: `Total Acumulado ($${saldoWeb + mensualidad})`, usd: saldoWeb + mensualidad });
             }
