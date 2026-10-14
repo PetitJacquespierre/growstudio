@@ -40,10 +40,12 @@ async function fetchBCVRate() {
     }
 }
 
+let selectedMontoUsd = null; // null significa deuda completa por defecto
+
 function actualizarCalculosBCV() {
     if (!currentClient) return;
-    const deudaUsd = parseFloat(currentClient.deuda || 0);
-    const deudaBs = (deudaUsd * bcvRate).toFixed(2);
+    const deudaTotalUsd = parseFloat(currentClient.deuda || 0);
+    const deudaBs = (deudaTotalUsd * bcvRate).toFixed(2);
     
     const deudaBsEl = document.getElementById("dash-deuda-bs");
     if (deudaBsEl) deudaBsEl.innerText = Number(deudaBs).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -57,6 +59,22 @@ function actualizarCalculosBCV() {
     window.onMetodoPagoChange();
 }
 
+// Configurar monto a pagar desde los chips de cuotas rápidas
+window.seleccionarCuota = function(montoUsd, chipBtn) {
+    selectedMontoUsd = montoUsd;
+    document.querySelectorAll('.quick-amount-chip').forEach(btn => {
+        btn.style.borderColor = 'rgba(255,255,255,0.15)';
+        btn.style.background = 'rgba(255,255,255,0.05)';
+        btn.style.color = '#fff';
+    });
+    if (chipBtn) {
+        chipBtn.style.borderColor = '#00d2ff';
+        chipBtn.style.background = 'rgba(0, 210, 255, 0.2)';
+        chipBtn.style.color = '#00d2ff';
+    }
+    window.onMetodoPagoChange();
+};
+
 window.onMetodoPagoChange = function() {
     const metodoSelect = document.getElementById("pay-metodo");
     if (!metodoSelect || !currentClient) return;
@@ -64,7 +82,10 @@ window.onMetodoPagoChange = function() {
     const labelMonto = document.getElementById("label-pay-monto");
     const inputMonto = document.getElementById("pay-monto");
     const hintMonto = document.getElementById("pay-monto-hint");
-    const deudaUsd = parseFloat(currentClient.deuda || 0);
+    
+    const deudaTotalUsd = parseFloat(currentClient.deuda || 0);
+    // Si el usuario seleccionó una cuota específica ($50, $100, etc.), usar esa; si no, la deuda total
+    const montoUsdActivo = (selectedMontoUsd !== null && selectedMontoUsd > 0) ? selectedMontoUsd : deudaTotalUsd;
 
     // Tarjetas de datos de pago
     const cardMovil = document.getElementById("datos-pago-movil");
@@ -79,15 +100,15 @@ window.onMetodoPagoChange = function() {
 
     if (metodo === "Pago Móvil") {
         if (labelMonto) labelMonto.innerText = "Monto a Pagar (Bs)";
-        const montoBs = (deudaUsd * bcvRate).toFixed(2);
+        const montoBs = (montoUsdActivo * bcvRate).toFixed(2);
         if (inputMonto) inputMonto.value = montoBs;
-        if (hintMonto) hintMonto.innerText = `≈ $${deudaUsd.toFixed(2)} USD a tasa BCV (${bcvRate.toFixed(2)} Bs/$)`;
+        if (hintMonto) hintMonto.innerText = `≈ $${montoUsdActivo.toFixed(2)} USD a tasa BCV (${bcvRate.toFixed(2)} Bs/$)`;
         if (cardMovil) cardMovil.style.display = "block";
         if (cardDivisa) cardDivisa.style.display = "none";
     } else {
         if (labelMonto) labelMonto.innerText = "Monto a Pagar ($ USD)";
-        if (inputMonto) inputMonto.value = deudaUsd.toFixed(2);
-        if (hintMonto) hintMonto.innerText = "Pago en divisas / dólares";
+        if (inputMonto) inputMonto.value = montoUsdActivo.toFixed(2);
+        if (hintMonto) hintMonto.innerText = `Pago en divisas / dólares ($${montoUsdActivo.toFixed(2)} USD)`;
         if (cardMovil) cardMovil.style.display = "none";
         if (cardDivisa) cardDivisa.style.display = "block";
 
@@ -106,7 +127,7 @@ window.onMetodoPagoChange = function() {
         if (metodosMail.includes(metodo)) {
             if (emailSection) emailSection.style.display = "block";
             if (wpSection) wpSection.style.display = "none";
-            if (dpMontoDivisa) dpMontoDivisa.innerText = `$${deudaUsd.toFixed(2)} USD`;
+            if (dpMontoDivisa) dpMontoDivisa.innerText = `$${montoUsdActivo.toFixed(2)} USD`;
         } else {
             if (emailSection) emailSection.style.display = "none";
             if (wpSection) wpSection.style.display = "block";
@@ -222,6 +243,7 @@ window.login = async function() {
                 const sData = sandiaSnap.exists() ? sandiaSnap.data() : {};
 
                 currentClientId = "sandia_production";
+                const deudaRegistrada = sData.deuda !== undefined ? parseFloat(sData.deuda) : 100;
                 currentClient = {
                     businessName: "Sandía Production",
                     nombre: "Sandía Production",
@@ -229,8 +251,9 @@ window.login = async function() {
                     cedula: "V-16.314.604",
                     proyecto: "Plataforma Web, Calendario Runner & Retos Deportivos",
                     plan: sData.plan || "MENSUAL",
-                    deuda: parseFloat(sData.deuda !== undefined ? sData.deuda : (sData.mensualidad || 20)),
-                    fechaVencimiento: sData.vencimiento || "",
+                    deuda: deudaRegistrada,
+                    deudaWeb: sData.deudaWeb !== undefined ? parseFloat(sData.deudaWeb) : deudaRegistrada,
+                    fechaVencimiento: sData.vencimiento || "2026-11-13",
                     estado: sData.estadoWeb === "ONLINE" || !sData.estadoWeb ? "ACTIVO" : sData.estadoWeb,
                     tipoServicio: "PRODUCCION_WEB"
                 };
@@ -339,10 +362,116 @@ function mostrarDashboard() {
         badge.className = "badge badge-suspended";
     } else if (estado === "MOROSO") {
         badge.innerText = "MOROSO";
-        badge.className = "badge badge-suspended"; // Usamos el mismo rojo
+        badge.className = "badge badge-suspended";
     } else {
         badge.innerText = "ACTIVO";
         badge.className = "badge badge-active";
+    }
+
+    // Información de Vencimiento
+    const vencimientoEl = document.getElementById("dash-vencimiento-info");
+    const fechaV = currentClient.fechaVencimiento || "";
+    if (vencimientoEl) {
+        if (fechaV) {
+            const [y, m, d] = fechaV.split('-');
+            const fechaFormateada = (d && m && y) ? `${d}/${m}/${y}` : fechaV;
+            vencimientoEl.innerHTML = `<i class="fa-regular fa-calendar-check"></i> Próximo corte: <strong>${fechaFormateada}</strong>`;
+        } else {
+            vencimientoEl.innerHTML = `<i class="fa-regular fa-calendar-check"></i> Próximo corte: <strong>Al día</strong>`;
+        }
+    }
+
+    // Lógica especial de Desglose y Cuotas para Sandía Production
+    const desgloseCard = document.getElementById("dash-desglose-card");
+    const desgloseTag = document.getElementById("dash-desglose-tag");
+    const desgloseDesc = document.getElementById("dash-desglose-desc");
+    const desgloseItems = document.getElementById("dash-desglose-items");
+    const quickContainer = document.getElementById("quick-amount-container");
+    const quickButtons = document.getElementById("quick-amount-buttons");
+
+    selectedMontoUsd = null; // Reiniciar selección manual
+
+    if (currentClientId === "sandia_production") {
+        // Verificar si la fecha actual ya superó el vencimiento (13 de Noviembre)
+        const hoy = new Date();
+        const baseVenc = fechaV ? new Date(fechaV + 'T00:00:00') : new Date('2026-11-13T00:00:00');
+        const vencioCiclo = hoy >= baseVenc;
+        const mensualidad = 20;
+
+        let saldoWeb = parseFloat(currentClient.deudaWeb !== undefined ? currentClient.deudaWeb : currentClient.deuda);
+        if (isNaN(saldoWeb)) saldoWeb = 100;
+
+        desgloseCard.style.display = "block";
+        desgloseTag.innerText = "Acuerdo Flexible";
+        desgloseDesc.innerText = "Resumen del plan de pagos acordado para la elaboración de la plataforma web y mantenimiento mensual:";
+
+        let htmlItems = `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
+                <span style="color: #e4e4e7;">🌐 Saldo restante elaboración web (Total $200 - $100 abonados):</span>
+                <strong style="color: #00d2ff;">$${saldoWeb.toFixed(2)} USD</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
+                <span style="color: #e4e4e7;">⚡ Mantenimiento mensual (Octubre - 1er mes cubierto):</span>
+                <span style="color: #10b981; font-weight: 700;">Al día ($0.00)</span>
+            </div>
+        `;
+
+        if (vencioCiclo) {
+            htmlItems += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; color: #f59e0b;">
+                    <span>⚠️ Mensualidad ciclo Noviembre (Corte ${fechaV}):</span>
+                    <strong>+$${mensualidad.toFixed(2)} USD</strong>
+                </div>
+            `;
+        }
+
+        desgloseItems.innerHTML = htmlItems;
+
+        // Generar botones de cuotas rápidas
+        if (quickContainer && quickButtons) {
+            quickContainer.style.display = "block";
+            let chips = [];
+
+            if (saldoWeb > 50) {
+                chips.push({ label: "Abonar Quincena Web ($50)", usd: 50 });
+                chips.push({ label: `Liquidar Saldo Web ($${saldoWeb})`, usd: saldoWeb });
+            } else if (saldoWeb > 0) {
+                chips.push({ label: `Abonar Saldo Web ($${saldoWeb})`, usd: saldoWeb });
+            }
+
+            if (vencioCiclo) {
+                chips.push({ label: `Cuota Quincenal + Mant. ($${50 + mensualidad})`, usd: 50 + mensualidad });
+                chips.push({ label: `Total Acumulado ($${saldoWeb + mensualidad})`, usd: saldoWeb + mensualidad });
+            }
+
+            quickButtons.innerHTML = chips.map((c, idx) => `
+                <button type="button" class="quick-amount-chip" onclick="window.seleccionarCuota(${c.usd}, this)" style="background: ${idx === 0 ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${idx === 0 ? '#00d2ff' : 'rgba(255,255,255,0.15)'}; color: ${idx === 0 ? '#00d2ff' : '#fff'}; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    ${c.label}
+                </button>
+            `).join('');
+
+            // Seleccionar por defecto la primera cuota sugerida ($50 o total)
+            if (chips.length > 0) {
+                selectedMontoUsd = chips[0].usd;
+            }
+        }
+
+    } else {
+        // Clientes regulares
+        if (parseFloat(currentClient.deuda || 0) > 0) {
+            desgloseCard.style.display = "block";
+            desgloseTag.innerText = "Mensualidad";
+            desgloseDesc.innerText = "Servicio de Menú Digital y Hospedaje en la Nube:";
+            desgloseItems.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                    <span style="color: #e4e4e7;">Plan ${plan}:</span>
+                    <strong style="color: #00d2ff;">$${deuda} USD</strong>
+                </div>
+            `;
+        } else {
+            desgloseCard.style.display = "none";
+        }
+        if (quickContainer) quickContainer.style.display = "none";
     }
 
     // Actualizar montos en Bolívares y tasa BCV
