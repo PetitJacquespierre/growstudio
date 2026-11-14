@@ -20,8 +20,8 @@ let currentClientId = null; // Guardamos también el ID del documento en firebas
 // =========================================
 // TASA BCV EN VIVO
 // =========================================
-const URL_API_DIVISAS_BCV = "https://script.google.com/macros/s/AKfycbyazhyYfK-vURGv34XF-oTW1_34rTVRs2WM7-aNlswf-mIGhIwgaLgwfGx1xZxfm50/exec";
-let bcvRate = parseFloat(localStorage.getItem("bcvRateCache")) || 853.50;
+const URL_API_DIVISAS_BCV = "https://admin-growstudio.vercel.app/api/bcv";
+let bcvRate = parseFloat(localStorage.getItem("bcvRateCache_v3")) || 914.02;
 
 async function fetchBCVRate() {
     try {
@@ -31,7 +31,7 @@ async function fetchBCVRate() {
             const nueva = parseFloat(data.usd);
             if (nueva > 10) {
                 bcvRate = nueva;
-                localStorage.setItem("bcvRateCache", bcvRate);
+                localStorage.setItem("bcvRateCache_v3", bcvRate); localStorage.setItem("bcvRateCache", bcvRate);
                 actualizarCalculosBCV();
             }
         }
