@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Información para LLMs y Agentes de IA
+# Grow Studio: Agencia de Desarrollo Web, Menús Digitales QR y Automatización con IA
+# Ubicación: Punto Fijo, Falcón, Venezuela
+# Web: https://growstudioweb.vercel.app/
+# Contacto: https://wa.me/584127732710
+
+Sitemap: https://growstudioweb.vercel.app/sitemap.xml

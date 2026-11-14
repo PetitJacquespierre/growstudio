@@ -1,0 +1,24 @@
+# Grow Studio — Agencia de Desarrollo Web, Menús Digitales QR y Automatización con IA
+
+> Grow Studio es una agencia y estudio tecnológico con sede en Punto Fijo, Falcón, Venezuela, especializada en desarrollo web de alto rendimiento, plataformas de comercio electrónico ligero (Micro-SaaS para restaurantes y comida rápida) y soluciones digitales para eventos masivos con sincronización offline PWA y tasa oficial BCV en tiempo real.
+
+## Servicios Principales
+- **Menús Digitales QR & Sistemas de Pedido:** Plataformas interactivas sin comisiones que convierten el tráfico en pedidos directos a WhatsApp, con cálculo dual en dólares y bolívares sincronizado directamente con la tasa del BCV.
+- **Desarrollo Web & Landing Pages:** Sitios corporativos ultrarrápidos, optimizados para SEO técnico, accesibilidad WCAG y puntuación superior a 95 en Core Web Vitals.
+- **Plataformas de Eventos & Running:** Gestión integral de inscripciones, asignación de dorsales y cronometraje virtual (caso de éxito: Reto Virtual Vzla y Sandía Production).
+- **Grow SEO & GEO Engine:** Auditorías técnicas en 10 dimensiones, citabilidad en modelos de IA (ChatGPT, Gemini, Perplexity) y generación de datos estructurados Schema.org.
+
+## Proyectos y Clientes Destacados
+- **Reto Virtual Vzla:** https://retovirtualvzla.com/ — Plataforma deportiva de carreras virtuales y cronometraje en Venezuela.
+- **Sandía Production:** https://sandiaproduction.com/ — Productora de eventos audiovisuales y deportivos masivos.
+- **Pasteles La Flaca:** https://pasteleslaflaca.vercel.app/ — Menú digital interactivo con pedidos automatizados a WhatsApp.
+- **Burger Rock Metal:** https://burger-rock-metal.vercel.app/ — Menú digital temático para restaurante de hamburguesas.
+
+## Datos de Contacto y Entidad
+- **Organización:** Grow Studio
+- **Fundador / Director:** Jacquespierre Petit
+- **Ubicación:** Punto Fijo, Estado Falcón, Venezuela
+- **Coordenadas:** 11.7061° N, 70.1802° W
+- **WhatsApp Oficial:** +58 412-7732710 / +58 412-0609841
+- **Sitio Web Oficial:** https://growstudioweb.vercel.app/
+- **Portal de Clientes:** https://growstudioweb.vercel.app/cliente/
